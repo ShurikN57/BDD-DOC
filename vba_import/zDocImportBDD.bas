@@ -1,4 +1,4 @@
-Attribute VB_Name = "zDocImportBDD"
+ï»¿Attribute VB_Name = "zDocImportBDD"
 Option Explicit
 
 ' =============================================
@@ -70,6 +70,8 @@ Public Sub SynchroniserDonneesAgents()
 
     On Error GoTo ErrHandler
 
+    If Not ExigerMotDePasseDeveloppeur("SynchroniserDonneesAgents") Then Exit Sub
+
     prevScreenUpdating = Application.ScreenUpdating
     prevEnableEvents = Application.EnableEvents
     prevCalculation = Application.Calculation
@@ -102,9 +104,9 @@ Public Sub SynchroniserDonneesAgents()
         GoTo SortiePropre
     End If
 
-    ' ===== Déprotection de la feuille cible =====
+    ' ===== DÃ©protection de la feuille cible =====
     On Error Resume Next
-    wsCible.Unprotect Password:=MDP_DEV
+    wsCible.Unprotect Password:=MotDePasseDeveloppeur()
     On Error GoTo ErrHandler
     cibleDeprotegee = (Not wsCible.ProtectContents)
 
@@ -122,13 +124,13 @@ Public Sub SynchroniserDonneesAgents()
 
     lastRowSource = wsSource.Cells(wsSource.Rows.Count, COL_ID).End(xlUp).Row
     If lastRowSource < ROW_START Then
-        MsgBox "Aucune donnée source à traiter.", vbInformation
+        MsgBox "Aucune donnÃ©e source Ã  traiter.", vbInformation
         GoTo SortiePropre
     End If
 
     lastRowCible = wsCible.Cells(wsCible.Rows.Count, COL_ID).End(xlUp).Row
     If lastRowCible < ROW_START Then
-        MsgBox "Aucune donnée cible à comparer.", vbExclamation
+        MsgBox "Aucune donnÃ©e cible Ã  comparer.", vbExclamation
         GoTo SortiePropre
     End If
 
@@ -203,12 +205,12 @@ Public Sub SynchroniserDonneesAgents()
     EnregistrerJournalSynchro wbCible, nbMaj, nbAbs, nbDoublons, nbEcarts, nbIgnorees
 
     If FERMER_APRES_SYNCHRO Then
-        MsgBox "Synchronisation terminée." & vbCrLf & vbCrLf & _
-                "Mises à jour : " & nbMaj & vbCrLf & _
+        MsgBox "Synchronisation terminÃ©e." & vbCrLf & vbCrLf & _
+                "Mises Ã  jour : " & nbMaj & vbCrLf & _
                 "ID absents : " & nbAbs & vbCrLf & _
                 "ID doublons : " & nbDoublons & vbCrLf & _
-                "Écarts valeurs : " & nbEcarts & vbCrLf & _
-                "Déjà identiques : " & nbIgnorees & vbCrLf & vbCrLf & _
+                "Ã‰carts valeurs : " & nbEcarts & vbCrLf & _
+                "DÃ©jÃ  identiques : " & nbIgnorees & vbCrLf & vbCrLf & _
                 "Sauvegarde du fichier en cours." & vbCrLf & _
                 "Veuillez rouvrir BDD-DOC.", vbInformation
 
@@ -218,18 +220,18 @@ Public Sub SynchroniserDonneesAgents()
     End If
 
     MsgBox _
-        "Synchronisation terminée." & vbCrLf & vbCrLf & _
-        "Mises à jour : " & nbMaj & vbCrLf & _
+        "Synchronisation terminÃ©e." & vbCrLf & vbCrLf & _
+        "Mises Ã  jour : " & nbMaj & vbCrLf & _
         "ID absents : " & nbAbs & vbCrLf & _
         "ID doublons : " & nbDoublons & vbCrLf & _
-        "Écarts valeurs : " & nbEcarts & vbCrLf & _
-        "Déjà identiques : " & nbIgnorees, _
+        "Ã‰carts valeurs : " & nbEcarts & vbCrLf & _
+        "DÃ©jÃ  identiques : " & nbIgnorees, _
         vbInformation
 
 SortiePropre:
     On Error Resume Next
     If cibleDeprotegee Then
-        wsCible.Protect Password:=MDP_DEV, UserInterfaceOnly:=True, _
+        wsCible.Protect Password:=MotDePasseDeveloppeur(), UserInterfaceOnly:=True, _
                          AllowFiltering:=True, AllowSorting:=True
     End If
     On Error GoTo 0
@@ -259,7 +261,7 @@ Private Sub FinaliserEtFermerApresSynchronisation(ByVal wbSource As Workbook, _
     On Error Resume Next
 
     If cibleDeprotegee Then
-        wsCible.Protect Password:=MDP_DEV, UserInterfaceOnly:=True, _
+        wsCible.Protect Password:=MotDePasseDeveloppeur(), UserInterfaceOnly:=True, _
                         AllowFiltering:=True, AllowSorting:=True
     End If
 
@@ -272,7 +274,7 @@ Private Sub FinaliserEtFermerApresSynchronisation(ByVal wbSource As Workbook, _
     Application.OnKey "^l"
     Application.OnKey "%{F11}"
 
-    ' Important : on bloque les événements pour empêcher Workbook_BeforeClose
+    ' Important : on bloque les Ã©vÃ©nements pour empÃªcher Workbook_BeforeClose
     Application.EnableEvents = False
 
     wbCible.Save
@@ -399,7 +401,7 @@ Private Sub MettreAJourTexteActualisation(ByVal wb As Workbook, ByVal nomOnglet 
     Set ws = wb.Worksheets(nomOnglet)
 
     With ws.Shapes(nomForme).TextFrame
-        .Characters.Text = "Dernière actualisation : " & Format(Now, "dd/mm/yyyy hh:mm:ss") & vbCrLf & _
+        .Characters.Text = "DerniÃ¨re actualisation : " & Format(Now, "dd/mm/yyyy hh:mm:ss") & vbCrLf & _
                            "Source : " & NOM_CLASSEUR_SOURCE
     End With
 
@@ -434,7 +436,7 @@ End Function
 ' =============================================
 Private Sub InitialiserRapportAbsents(ByVal ws As Worksheet)
 
-    ws.Range("A1:G1").Value = Array("ID", "Ligne source", "Date source", "Nom source", "Conformité source", "Observation source", "Motif")
+    ws.Range("A1:G1").Value = Array("ID", "Ligne source", "Date source", "Nom source", "ConformitÃ© source", "Observation source", "Motif")
 
 End Sub
 
@@ -443,7 +445,7 @@ End Sub
 ' =============================================
 Private Sub InitialiserRapportDoublons(ByVal ws As Worksheet)
 
-    ws.Range("A1:H1").Value = Array("ID", "Ligne source", "Lignes cible", "Date source", "Nom source", "Conformité source", "Observation source", "Motif")
+    ws.Range("A1:H1").Value = Array("ID", "Ligne source", "Lignes cible", "Date source", "Nom source", "ConformitÃ© source", "Observation source", "Motif")
 
 End Sub
 
@@ -452,7 +454,7 @@ End Sub
 ' =============================================
 Private Sub InitialiserRapportEcarts(ByVal ws As Worksheet)
 
-    ws.Range("A1:K1").Value = Array("ID", "Ligne source", "Ligne cible", "Date source", "Nom source", "Conformité source", "Observation source", "Date cible", "Nom cible", "Conformité cible", "Observation cible")
+    ws.Range("A1:K1").Value = Array("ID", "Ligne source", "Ligne cible", "Date source", "Nom source", "ConformitÃ© source", "Observation source", "Date cible", "Nom cible", "ConformitÃ© cible", "Observation cible")
 
 End Sub
 
@@ -483,7 +485,7 @@ Private Sub EcrireRapportDoublon(ByVal ws As Worksheet, ByVal r As Long, ByVal i
     ws.Cells(r, 5).Value = yzabSource(1, 2)
     ws.Cells(r, 6).Value = yzabSource(1, 3)
     ws.Cells(r, 7).Value = yzabSource(1, 4)
-    ws.Cells(r, 8).Value = "ID présent plusieurs fois dans la cible"
+    ws.Cells(r, 8).Value = "ID prÃ©sent plusieurs fois dans la cible"
 
 End Sub
 
@@ -590,7 +592,7 @@ Private Sub EnregistrerJournalSynchro(ByVal wb As Workbook, _
     Set ws = GetOrCreateSheetSynchro(wb)
 
     If Trim$(CStr(ws.Range("A1").Value)) = "" Then
-        ws.Range("A1:H1").Value = Array("Date", "Heure", "Source", "Mises à jour", "ID absents", "ID doublons", "Écarts valeurs", "Déjà identiques")
+        ws.Range("A1:H1").Value = Array("Date", "Heure", "Source", "Mises Ã  jour", "ID absents", "ID doublons", "Ã‰carts valeurs", "DÃ©jÃ  identiques")
         ws.Rows(1).Font.Bold = True
     End If
 
