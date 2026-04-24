@@ -1,14 +1,13 @@
-Attribute VB_Name = "zDocGitSync"
+ÔªøAttribute VB_Name = "zDocGitSync"
 Option Explicit
 
 ' =============================================
 ' Synchronisation BDD-DOC <-> GitHub / Codex
 ' - src        = version UTF-8 lisible pour GitHub / Codex
-' - vba_import = version native rÈimportable dans Excel
+' - vba_import = version native r√©importable dans Excel
 ' =============================================
 
-Private Const DOSSIER_REPO_PC1 As String = "C:\Users\FMF00CDN\Desktop\BDD-DOC-GitHub\BDD-DOC"
-Private Const DOSSIER_REPO_PC2 As String = "D:\BDD-DOC-GitHub\BDD-DOC"
+Private Const ENV_DOSSIER_REPO As String = "BDD_DOC_REPO_PATH"
 
 Private Const NOM_THISWORKBOOK As String = "ThisWorkbook"
 Private Const NOM_FEUILLE_CIBLE As String = "Base"
@@ -83,14 +82,14 @@ Public Sub ExporterProjetVersGitHubEtImportExcel()
 SuiteComposant:
     Next vbComp
 
-    MsgBox "Export terminÈ :" & vbCrLf & _
+    MsgBox "Export termin√© :" & vbCrLf & _
            "- GitHub / Codex : " & cheminCodex & vbCrLf & _
-           "- RÈimport Excel : " & cheminImport, vbInformation
+           "- R√©import Excel : " & cheminImport, vbInformation
 
 End Sub
 
 ' =============================================
-' 2. Import depuis le dÈpÙt local
+' 2. Import depuis le d√©p√¥t local
 ' =============================================
 Public Sub ImporterProjetDepuisGitHub()
 
@@ -440,19 +439,24 @@ End Function
 
 Private Function DossierRepo() As String
 
-    If DossierExiste(DOSSIER_REPO_PC1) Then
-        DossierRepo = NormaliserCheminSansSlash(DOSSIER_REPO_PC1)
+    Dim cheminConfig As String
+    Dim cheminClasseur As String
+
+    cheminConfig = NormaliserCheminSansSlash(Trim$(Environ$(ENV_DOSSIER_REPO)))
+    If Len(cheminConfig) > 0 And DossierExiste(cheminConfig) Then
+        DossierRepo = cheminConfig
         Exit Function
     End If
 
-    If DossierExiste(DOSSIER_REPO_PC2) Then
-        DossierRepo = NormaliserCheminSansSlash(DOSSIER_REPO_PC2)
+    cheminClasseur = NormaliserCheminSansSlash(ThisWorkbook.Path)
+    If Len(cheminClasseur) > 0 And DossierExiste(cheminClasseur) Then
+        DossierRepo = cheminClasseur
         Exit Function
     End If
 
-    MsgBox "Aucun dossier repo valide trouvÈ." & vbCrLf & vbCrLf & _
-           "PC1 : " & DOSSIER_REPO_PC1 & vbCrLf & _
-           "PC2 : " & DOSSIER_REPO_PC2, vbExclamation
+    MsgBox "Aucun dossier repo valide trouv√©." & vbCrLf & vbCrLf & _
+           "Renseignez la variable d'environnement : " & ENV_DOSSIER_REPO & vbCrLf & _
+           "Exemple : C:\BDD-DOC-GitHub\BDD-DOC", vbExclamation
 
     DossierRepo = ""
 
@@ -531,12 +535,12 @@ Public Sub VerifierPreRequisGitSync()
     cheminCodex = DossierCodex()
     cheminImport = DossierImport()
 
-    message = "PrÈ-check GitSync" & vbCrLf & vbCrLf
+    message = "Pr√©-check GitSync" & vbCrLf & vbCrLf
 
     If ProjetVBAccessible() Then
-        message = message & "[OK] AccËs VBProject" & vbCrLf
+        message = message & "[OK] Acc√®s VBProject" & vbCrLf
     Else
-        message = message & "[KO] AccËs VBProject" & vbCrLf
+        message = message & "[KO] Acc√®s VBProject" & vbCrLf
     End If
 
     CreerDossierSiAbsent cheminRepo
@@ -546,9 +550,9 @@ Public Sub VerifierPreRequisGitSync()
     message = message & IIf(TesterEcritureDossier(cheminRepo), "[OK]", "[KO]") & " Dossier repo: " & cheminRepo & vbCrLf
     message = message & IIf(TesterEcritureDossier(cheminCodex), "[OK]", "[KO]") & " Dossier src: " & cheminCodex & vbCrLf
     message = message & IIf(TesterEcritureDossier(cheminImport), "[OK]", "[KO]") & " Dossier import: " & cheminImport & vbCrLf & vbCrLf
-    message = message & "Chemins testÈs :" & vbCrLf & _
-              "PC1 : " & DOSSIER_REPO_PC1 & vbCrLf & _
-              "PC2 : " & DOSSIER_REPO_PC2
+    message = message & "Source de configuration :" & vbCrLf & _
+              "- Variable d'environnement : " & ENV_DOSSIER_REPO & vbCrLf & _
+              "- Fallback : dossier du classeur actif"
 
     MsgBox message, vbInformation
 
@@ -586,10 +590,10 @@ Private Function ProjetVBAccessible() As Boolean
     Exit Function
 
 ErrHandler:
-    MsgBox "AccËs refusÈ au projet VBA." & vbCrLf & _
+    MsgBox "Acc√®s refus√© au projet VBA." & vbCrLf & _
            "Active l'option :" & vbCrLf & _
-           "Fichier > Options > Centre de gestion de la confidentialitÈ > ParamËtres des macros > " & _
-           "AccËs approuvÈ au modËle d'objet du projet VBA.", vbExclamation
+           "Fichier > Options > Centre de gestion de la confidentialit√© > Param√®tres des macros > " & _
+           "Acc√®s approuv√© au mod√®le d'objet du projet VBA.", vbExclamation
 
 End Function
 
@@ -624,4 +628,3 @@ Private Sub SupprimerComposantSiExiste(ByVal nomComp As String, ByVal typeAttend
     ThisWorkbook.VBProject.VBComponents.Remove vbComp
 
 End Sub
-
