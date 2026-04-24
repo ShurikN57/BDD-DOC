@@ -382,19 +382,20 @@ Private Sub CopierFichierBinaire(ByVal cheminSource As String, ByVal cheminCible
 
     Dim fso As Object
 
+    On Error GoTo ErrCopy
+
     Set fso = CreateObject("Scripting.FileSystemObject")
-
-    On Error Resume Next
-    If fso.FileExists(cheminCible) Then fso.DeleteFile cheminCible, True
-    If Err.Number <> 0 Then
-        JournaliserIO "CopierFichierBinaire", cheminCible, Err.Number, Err.description
-        Err.Clear
-    End If
-    On Error GoTo 0
-
+    SupprimerFichierSiExiste cheminCible, "CopierFichierBinaire"
     fso.CopyFile cheminSource, cheminCible, True
 
+SortiePropre:
     Set fso = Nothing
+    Exit Sub
+
+ErrCopy:
+    JournaliserIO "CopierFichierBinaire", cheminCible, Err.Number, Err.description
+    Err.Clear
+    Resume SortiePropre
 
 End Sub
 
@@ -502,13 +503,13 @@ Private Sub SupprimerFichierSiExiste(ByVal chemin As String, ByVal contexte As S
 
     If Len(Dir(chemin)) = 0 Then Exit Sub
 
-    On Error Resume Next
+    On Error GoTo ErrHandler
     Kill chemin
-    If Err.Number <> 0 Then
-        JournaliserIO contexte, chemin, Err.Number, Err.description
-        Err.Clear
-    End If
-    On Error GoTo 0
+    Exit Sub
+
+ErrHandler:
+    JournaliserIO contexte, chemin, Err.Number, Err.description
+    Err.Clear
 
 End Sub
 
@@ -616,6 +617,7 @@ Private Sub SupprimerComposantSiExiste(ByVal nomComp As String, ByVal typeAttend
 
     Dim vbComp As Object
 
+    ' Test d'existence d'un composant VBA : bloc local tolérant et borné
     On Error Resume Next
     Set vbComp = ThisWorkbook.VBProject.VBComponents(nomComp)
     On Error GoTo 0

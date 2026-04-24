@@ -88,6 +88,46 @@ ErrHandler:
 
 End Sub
 
+Private Function ObtenirVBProjectSiAccessible(ByRef vbProj As Object) As Boolean
+
+    On Error GoTo ErrHandler
+    Set vbProj = ThisWorkbook.VBProject
+    ObtenirVBProjectSiAccessible = Not vbProj Is Nothing
+    Exit Function
+
+ErrHandler:
+    Debug.Print "[zDocDeveloppeurOnOFF] Accès VBProject indisponible : " & Err.Number & " - " & Err.description
+    Err.Clear
+    Set vbProj = Nothing
+
+End Function
+
+Private Sub DeprotegerFeuilleSansErreur(ByVal ws As Worksheet)
+
+    On Error GoTo ErrHandler
+    ws.Unprotect Password:=MotDePasseDeveloppeur()
+    ws.EnableSelection = xlNoRestrictions
+    Exit Sub
+
+ErrHandler:
+    Debug.Print "[zDocDeveloppeurOnOFF] Déprotection feuille impossible (" & ws.Name & ") : " & _
+                Err.Number & " - " & Err.description
+    Err.Clear
+
+End Sub
+
+Private Sub DeprotegerClasseurSansErreur()
+
+    On Error GoTo ErrHandler
+    ThisWorkbook.Unprotect Password:=MotDePasseDeveloppeur()
+    Exit Sub
+
+ErrHandler:
+    Debug.Print "[zDocDeveloppeurOnOFF] Déprotection classeur impossible : " & Err.Number & " - " & Err.description
+    Err.Clear
+
+End Sub
+
 ' =============================================
 ' BLOCAGE / DEBLOCAGE ALT+F11
 ' =============================================
@@ -137,15 +177,12 @@ Public Sub ModeDeveloppeur_ON()
 
     DebloquerAltF11
 
-    On Error Resume Next
-    Set vbProj = ThisWorkbook.VBProject
-    If Not vbProj Is Nothing Then
+    If ObtenirVBProjectSiAccessible(vbProj) Then
         If vbProj.Protection = 1 Then
             SendKeys MDP & "~"
             Application.VBE.MainWindow.Visible = True
         End If
     End If
-    On Error GoTo ErrHandler
 
     Application.ScreenUpdating = False
     Application.EnableEvents = False
@@ -157,15 +194,10 @@ Public Sub ModeDeveloppeur_ON()
     Application.ExecuteExcel4Macro "SHOW.TOOLBAR(""Ribbon"",True)"
 
     For Each ws In ThisWorkbook.Worksheets
-        On Error Resume Next
-        ws.Unprotect Password:=MotDePasseDeveloppeur()
-        ws.EnableSelection = xlNoRestrictions
-        On Error GoTo ErrHandler
+        DeprotegerFeuilleSansErreur ws
     Next ws
 
-    On Error Resume Next
-    ThisWorkbook.Unprotect Password:=MotDePasseDeveloppeur()
-    On Error GoTo ErrHandler
+    DeprotegerClasseurSansErreur
 
     AppliquerValidationConformite
 

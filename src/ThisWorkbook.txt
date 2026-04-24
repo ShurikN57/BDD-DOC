@@ -108,11 +108,38 @@ End Sub
 ' ============================================================
 Private Sub Workbook_BeforeClose(Cancel As Boolean)
 
-    On Error Resume Next
+    On Error GoTo ErrHandler
+
+    RestaurerEtatApplicationAvantFermeture
+    Exit Sub
+
+ErrHandler:
+    Debug.Print "[ThisWorkbook] Erreur BeforeClose : " & Err.Number & " - " & Err.description
+    Err.Clear
+
+End Sub
+
+Private Sub RestaurerEtatApplicationAvantFermeture()
+
+    On Error GoTo EtapeDesactiverCollage
     ModeDeveloppeur_OFF True
+
+EtapeDesactiverCollage:
+    Err.Clear
+    On Error GoTo EtapeRaccourciRecherche
     DesactiverCollageValeursRecherche
+
+EtapeRaccourciRecherche:
+    Err.Clear
+    On Error GoTo EtapeRaccourciVBE
     Application.OnKey "^l"
+
+EtapeRaccourciVBE:
+    Err.Clear
+    On Error GoTo Fin
     Application.OnKey "%{F11}"
-    On Error GoTo 0
+
+Fin:
+    Err.Clear
 
 End Sub
