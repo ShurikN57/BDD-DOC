@@ -283,3 +283,44 @@ La priorité absolue reste :
 3. Mettre une base qualité (erreurs, tests, runbook),
 
 puis industrialiser le refactor sans casser le métier.
+
+---
+
+## 9) Variante accélérée : avancer en 1 à 2 jours, petit à petit
+
+Oui, c’est possible de démarrer **beaucoup plus vite** sans attendre tout le programme complet.
+L’idée : faire un **micro-lot sécurisé** en 48h, puis enchaîner.
+
+## Jour 1 (sécurisation immédiate, faible risque)
+
+1. **Rotation du mot de passe** et retrait de la valeur explicite du code versionné.
+2. **Centralisation minimale de log** (`zDocLog`) pour capturer les erreurs critiques.
+3. **Pré-check GitSync** : affichage clair des chemins/config manquants.
+
+### Résultat attendu J1
+- Risque sécurité réduit immédiatement.
+- Diagnostics d’erreur plus actionnables.
+
+## Jour 2 (fiabilisation pragmatique)
+
+4. **Externalisation de la config GitSync** (chemin repo hors code).
+5. **Normalisation de base `src`/`vba_import`** (encodage + règle de contrôle simple).
+6. **Smoke tests manuels ciblés** : ouverture, saisie conformité, synchro, sauvegarde.
+
+### Résultat attendu J2
+- Flux de synchro portable.
+- Réduction du drift documentaire/technique.
+- Base de test minimale pour évoluer sans casser.
+
+## Ce qu’on ne promet PAS en 48h
+
+- Refactor complet de `Base`.
+- Couverture de test exhaustive.
+- Industrialisation complète du runbook et de la gouvernance.
+
+## Stratégie recommandée
+
+- **Oui au démarrage en 1-2 jours** (quick wins contrôlés).
+- **Puis continuation en lots** (A→E) pour traiter le fond sans dette cachée.
+
+Autrement dit : démarrer vite, mais dans une trajectoire qui converge vers le plan complet.

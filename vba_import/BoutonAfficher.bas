@@ -1,4 +1,4 @@
-Attribute VB_Name = "BoutonAfficher"
+﻿Attribute VB_Name = "BoutonAfficher"
 Option Explicit
 
 ' =============================================
@@ -19,5 +19,4 @@ Fin:
     Application.ScreenUpdating = True
 
 End Sub
-
 

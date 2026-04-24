@@ -1,4 +1,4 @@
-Attribute VB_Name = "Utilitaires"
+﻿Attribute VB_Name = "Utilitaires"
 
 Option Explicit
 
@@ -19,4 +19,3 @@ Public Function DerniereLigneUtileMain() As Long
     DerniereLigneUtileMain = lastRow
 
 End Function
-
