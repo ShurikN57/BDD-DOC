@@ -19,6 +19,26 @@ Option Explicit
 Private Const WD_WINDOW_STATE_MAXIMIZE As Long = 1
 Private Const WD_STATISTIC_PAGES As Long = 2
 
+Private Function RecupererInstanceWord(ByRef wdApp As Object) As Boolean
+
+    On Error Resume Next
+    Set wdApp = GetObject(, "Word.Application")
+    On Error GoTo 0
+
+    If wdApp Is Nothing Then
+        On Error GoTo Fin
+        Set wdApp = CreateObject("Word.Application")
+    End If
+
+    RecupererInstanceWord = Not wdApp Is Nothing
+    Exit Function
+
+Fin:
+    Err.Clear
+    Set wdApp = Nothing
+
+End Function
+
 Public Sub OpenWordAtPageAndHighlight(ByVal filePath As String, ByVal pageNum As Variant, ByVal searchText As String)
 
     Dim wdApp As Object
@@ -53,12 +73,9 @@ Public Sub OpenWordAtPageAndHighlight(ByVal filePath As String, ByVal pageNum As
         Exit Sub
     End If
 
-    On Error Resume Next
-    Set wdApp = GetObject(, "Word.Application")
-    On Error GoTo ErrHandler
-
-    If wdApp Is Nothing Then
-        Set wdApp = CreateObject("Word.Application")
+    If Not RecupererInstanceWord(wdApp) Then
+        MsgBox "Impossible d'ouvrir Microsoft Word sur ce poste.", vbExclamation
+        Exit Sub
     End If
 
     wdApp.Visible = True

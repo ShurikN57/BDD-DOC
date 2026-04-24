@@ -26,21 +26,13 @@ End Function
 ' 0-bis. SetApplicationVariables
 ' ============================================================
 Private Sub SetApplicationVariables(ByVal restoreState As Boolean)
-
-    On Error Resume Next
-
     If restoreState Then
         If m_AppStateSaved Then
-            Application.ScreenUpdating = m_PrevScreenUpdating
-            Application.EnableEvents = m_PrevEnableEvents
-            Application.DisplayStatusBar = m_PrevDisplayStatusBar
-            Application.Calculation = m_PrevCalculation
+            AppliquerEtatApplicationSafe m_PrevScreenUpdating, m_PrevEnableEvents, _
+                                        m_PrevDisplayStatusBar, m_PrevCalculation
             m_AppStateSaved = False
         Else
-            Application.ScreenUpdating = True
-            Application.EnableEvents = True
-            Application.DisplayStatusBar = True
-            Application.Calculation = xlCalculationAutomatic
+            AppliquerEtatApplicationSafe True, True, True, xlCalculationAutomatic
         End If
     Else
         If Not m_AppStateSaved Then
@@ -51,13 +43,36 @@ Private Sub SetApplicationVariables(ByVal restoreState As Boolean)
             m_AppStateSaved = True
         End If
 
-        Application.ScreenUpdating = False
-        Application.EnableEvents = False
-        Application.DisplayStatusBar = False
-        Application.Calculation = xlCalculationManual
+        AppliquerEtatApplicationSafe False, False, False, xlCalculationManual
     End If
 
-    On Error GoTo 0
+End Sub
+
+Private Sub AppliquerEtatApplicationSafe(ByVal screenUpdatingValue As Boolean, _
+                                         ByVal enableEventsValue As Boolean, _
+                                         ByVal displayStatusBarValue As Boolean, _
+                                         ByVal calculationValue As XlCalculation)
+
+    On Error GoTo Fin
+    Application.ScreenUpdating = screenUpdatingValue
+    Application.EnableEvents = enableEventsValue
+    Application.DisplayStatusBar = displayStatusBarValue
+    Application.Calculation = calculationValue
+
+Fin:
+    Err.Clear
+
+End Sub
+
+Private Sub RestaurerEtatExcelPostTraitement(ByVal prevCalc As XlCalculation)
+
+    On Error GoTo Fin
+    Application.Calculation = prevCalc
+    Application.EnableEvents = True
+    Application.ScreenUpdating = True
+
+Fin:
+    Err.Clear
 
 End Sub
 
@@ -548,11 +563,7 @@ Public Sub RafraichirCouleursConformiteSurLignes(ByVal adresseLignes As String)
     Next area
 
 Fin:
-    On Error Resume Next
-    Application.Calculation = prevCalc
-    Application.EnableEvents = True
-    Application.ScreenUpdating = True
-    On Error GoTo 0
+    RestaurerEtatExcelPostTraitement prevCalc
 
 End Sub
 
@@ -724,11 +735,7 @@ Public Sub RafraichirCouleursConformite()
     End If
 
 Fin:
-    On Error Resume Next
-    Application.Calculation = prevCalc
-    Application.EnableEvents = True
-    Application.ScreenUpdating = True
-    On Error GoTo 0
+    RestaurerEtatExcelPostTraitement prevCalc
 
 End Sub
 
@@ -921,5 +928,4 @@ Private Sub Worksheet_BeforeDoubleClick(ByVal Target As Range, Cancel As Boolean
     End If
 
 End Sub
-
 
