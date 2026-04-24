@@ -11,7 +11,38 @@ Public Const SHEET_MENU_DEROULANT As String = "MENU DEROULANT"
 ' =============================================
 ' MOT DE PASSE / SECURITE
 ' =============================================
-Public Const MDP_DEV As String = "11223344"
+' IMPORTANT :
+' - Ne pas versionner de secret en clair dans le code.
+' - Définir la variable d'environnement BDD_DOC_DEV_PASSWORD
+'   sur les postes autorisés.
+Private Const ENV_MDP_DEV As String = "BDD_DOC_DEV_PASSWORD"
+
+Public Function MotDePasseDeveloppeur() As String
+
+    Static cacheMdp As String
+
+    If Len(cacheMdp) > 0 Then
+        MotDePasseDeveloppeur = cacheMdp
+        Exit Function
+    End If
+
+    cacheMdp = Trim$(Environ$(ENV_MDP_DEV))
+    MotDePasseDeveloppeur = cacheMdp
+
+End Function
+
+Public Function ExigerMotDePasseDeveloppeur(Optional ByVal contexte As String = "") As Boolean
+
+    If Len(MotDePasseDeveloppeur()) > 0 Then
+        ExigerMotDePasseDeveloppeur = True
+        Exit Function
+    End If
+
+    MsgBox "Mot de passe développeur non configuré." & vbCrLf & _
+           "Définissez la variable d'environnement " & ENV_MDP_DEV & "." & _
+           IIf(Len(contexte) > 0, vbCrLf & "Contexte : " & contexte, ""), vbExclamation
+
+End Function
 
 ' =============================================
 ' SESSION
@@ -175,5 +206,3 @@ Public Const COLOR_CONF_LIEN_INCORRECT As Long = 7531262 ' RGB(254, 234, 114) / 
 Public Const MAX_SELECTION_CHANGE As Long = 500
 Public Const SEUIL_CONFIRMATION_MASSE As Long = 2000
 Public Const SEUIL_BLOCAGE_MASSE As Long = 15000
-
-

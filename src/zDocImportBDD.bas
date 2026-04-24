@@ -70,6 +70,8 @@ Public Sub SynchroniserDonneesAgents()
 
     On Error GoTo ErrHandler
 
+    If Not ExigerMotDePasseDeveloppeur("SynchroniserDonneesAgents") Then Exit Sub
+
     prevScreenUpdating = Application.ScreenUpdating
     prevEnableEvents = Application.EnableEvents
     prevCalculation = Application.Calculation
@@ -104,7 +106,7 @@ Public Sub SynchroniserDonneesAgents()
 
     ' ===== Déprotection de la feuille cible =====
     On Error Resume Next
-    wsCible.Unprotect Password:=MDP_DEV
+    wsCible.Unprotect Password:=MotDePasseDeveloppeur()
     On Error GoTo ErrHandler
     cibleDeprotegee = (Not wsCible.ProtectContents)
 
@@ -229,7 +231,7 @@ Public Sub SynchroniserDonneesAgents()
 SortiePropre:
     On Error Resume Next
     If cibleDeprotegee Then
-        wsCible.Protect Password:=MDP_DEV, UserInterfaceOnly:=True, _
+        wsCible.Protect Password:=MotDePasseDeveloppeur(), UserInterfaceOnly:=True, _
                          AllowFiltering:=True, AllowSorting:=True
     End If
     On Error GoTo 0
@@ -259,7 +261,7 @@ Private Sub FinaliserEtFermerApresSynchronisation(ByVal wbSource As Workbook, _
     On Error Resume Next
 
     If cibleDeprotegee Then
-        wsCible.Protect Password:=MDP_DEV, UserInterfaceOnly:=True, _
+        wsCible.Protect Password:=MotDePasseDeveloppeur(), UserInterfaceOnly:=True, _
                         AllowFiltering:=True, AllowSorting:=True
     End If
 
