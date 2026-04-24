@@ -2,6 +2,8 @@
 
 _Date de l'audit : 24 avril 2026_
 
+> Mise à jour : un plan de remédiation détaillé est disponible dans `PLAN_REMEDIATION_FOND_COMBLE_2026-04-24.md`.
+
 ## 1) Périmètre
 
 Audit statique du dépôt `BDD-DOC` (modules VBA exportés) sur :
