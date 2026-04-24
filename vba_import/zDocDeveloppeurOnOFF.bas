@@ -1,4 +1,4 @@
-Attribute VB_Name = "zDocDeveloppeurOnOFF"
+ï»¿Attribute VB_Name = "zDocDeveloppeurOnOFF"
 Option Explicit
 
 ' =============================================
@@ -66,7 +66,7 @@ Private Sub AppliquerValidationConformite()
     Set ws = ThisWorkbook.Worksheets(SHEET_MAIN)
     lastRow = DerniereLigneUtileMain()
 
-    ws.Unprotect Password:=MDP_DEV
+    ws.Unprotect Password:=MotDePasseDeveloppeur()
 
     With ws.Range(COL_VALIDATION_CONF & ROW_START & ":" & COL_VALIDATION_CONF & lastRow).Validation
         .Delete
@@ -77,14 +77,14 @@ Private Sub AppliquerValidationConformite()
         .InCellDropdown = True
         .ShowInput = False
         .ShowError = True
-        .ErrorTitle = "Valeur non autorisée"
+        .ErrorTitle = "Valeur non autorisÃ©e"
         .ErrorMessage = MSG_VALEURS_CONF
     End With
 
     Exit Sub
 
 ErrHandler:
-    MsgBox "Erreur lors de l'application de la validation conformité : " & Err.description, vbExclamation
+    MsgBox "Erreur lors de l'application de la validation conformitÃ© : " & Err.description, vbExclamation
 
 End Sub
 
@@ -100,7 +100,7 @@ Public Sub DebloquerAltF11()
 End Sub
 
 Public Sub AccesFerme()
-    MsgBox "Accès non autorisé.", vbCritical
+    MsgBox "AccÃ¨s non autorisÃ©.", vbCritical
 End Sub
 
 Public Sub OuvrirEditeurVBA()
@@ -120,9 +120,11 @@ Public Sub ModeDeveloppeur_ON()
     Dim prevEnableEvents As Boolean
     Dim prevCalculation As XlCalculation
 
-    MDP = InputBox("Mot de passe développeur :", "Mode développeur")
+    If Not ExigerMotDePasseDeveloppeur("ModeDeveloppeur_ON") Then Exit Sub
 
-    If MDP <> MDP_DEV Then
+    MDP = InputBox("Mot de passe dÃ©veloppeur :", "Mode dÃ©veloppeur")
+
+    If MDP <> MotDePasseDeveloppeur() Then
         MsgBox "Mot de passe incorrect.", vbCritical
         Exit Sub
     End If
@@ -156,13 +158,13 @@ Public Sub ModeDeveloppeur_ON()
 
     For Each ws In ThisWorkbook.Worksheets
         On Error Resume Next
-        ws.Unprotect Password:=MDP_DEV
+        ws.Unprotect Password:=MotDePasseDeveloppeur()
         ws.EnableSelection = xlNoRestrictions
         On Error GoTo ErrHandler
     Next ws
 
     On Error Resume Next
-    ThisWorkbook.Unprotect Password:=MDP_DEV
+    ThisWorkbook.Unprotect Password:=MotDePasseDeveloppeur()
     On Error GoTo ErrHandler
 
     AppliquerValidationConformite
@@ -170,9 +172,9 @@ Public Sub ModeDeveloppeur_ON()
     ModeDeveloppeurActif = True
     ThisWorkbook.Worksheets(SHEET_MAIN).Activate
 
-    MsgBox "Mode développeur ACTIVÉ." & vbCrLf & _
-           "- Feuilles déprotégées" & vbCrLf & _
-           "- Structure du classeur déprotégée", vbInformation
+    MsgBox "Mode dÃ©veloppeur ACTIVÃ‰." & vbCrLf & _
+           "- Feuilles dÃ©protÃ©gÃ©es" & vbCrLf & _
+           "- Structure du classeur dÃ©protÃ©gÃ©e", vbInformation
 
 SortiePropre:
     Application.Calculation = prevCalculation
@@ -181,7 +183,7 @@ SortiePropre:
     Exit Sub
 
 ErrHandler:
-    MsgBox "Erreur lors de l'activation du mode développeur : " & Err.description, vbExclamation
+    MsgBox "Erreur lors de l'activation du mode dÃ©veloppeur : " & Err.description, vbExclamation
     Resume SortiePropre
 
 End Sub
@@ -201,6 +203,8 @@ Public Sub ModeDeveloppeur_OFF(Optional ByVal Silencieux As Boolean = False)
     Dim prevCalculation As XlCalculation
 
     On Error GoTo ErrHandler
+
+    If Not ExigerMotDePasseDeveloppeur("ModeDeveloppeur_OFF") Then Exit Sub
 
     prevScreenUpdating = Application.ScreenUpdating
     prevEnableEvents = Application.EnableEvents
@@ -222,7 +226,7 @@ Public Sub ModeDeveloppeur_OFF(Optional ByVal Silencieux As Boolean = False)
     Application.ExecuteExcel4Macro "SHOW.TOOLBAR(""Ribbon"",False)"
 
     With wsMain
-        .Unprotect Password:=MDP_DEV
+        .Unprotect Password:=MotDePasseDeveloppeur()
         .Cells.Locked = True
 
         Set rngEditable = ConstruirePlageEditable(wsMain, lastRow)
@@ -234,18 +238,18 @@ Public Sub ModeDeveloppeur_OFF(Optional ByVal Silencieux As Boolean = False)
     AppliquerValidationConformite
 
     For Each ws In ThisWorkbook.Worksheets
-        ws.Protect Password:=MDP_DEV, UserInterfaceOnly:=True, _
+        ws.Protect Password:=MotDePasseDeveloppeur(), UserInterfaceOnly:=True, _
                    AllowFiltering:=True, AllowSorting:=True
         ws.EnableSelection = xlNoRestrictions
     Next ws
 
-    ThisWorkbook.Protect Password:=MDP_DEV, Structure:=True
+    ThisWorkbook.Protect Password:=MotDePasseDeveloppeur(), Structure:=True
     ThisWorkbook.Worksheets(SHEET_MAIN).Activate
 
     If Not Silencieux Then
-        MsgBox "Mode développeur DÉSACTIVÉ." & vbCrLf & _
-               "- Feuilles protégées" & vbCrLf & _
-               "- Structure du classeur protégée", vbInformation
+        MsgBox "Mode dÃ©veloppeur DÃ‰SACTIVÃ‰." & vbCrLf & _
+               "- Feuilles protÃ©gÃ©es" & vbCrLf & _
+               "- Structure du classeur protÃ©gÃ©e", vbInformation
     End If
 
 SortiePropre:
@@ -255,7 +259,7 @@ SortiePropre:
     Exit Sub
 
 ErrHandler:
-    MsgBox "Erreur lors de la désactivation du mode développeur : " & Err.description, vbExclamation
+    MsgBox "Erreur lors de la dÃ©sactivation du mode dÃ©veloppeur : " & Err.description, vbExclamation
     Resume SortiePropre
 
 End Sub
@@ -263,4 +267,3 @@ End Sub
 Public Sub ModeDeveloppeur_OFF_Bouton()
     ModeDeveloppeur_OFF False
 End Sub
-

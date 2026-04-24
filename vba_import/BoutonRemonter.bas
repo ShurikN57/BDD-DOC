@@ -1,4 +1,4 @@
-Attribute VB_Name = "BoutonRemonter"
+﻿Attribute VB_Name = "BoutonRemonter"
 Option Explicit
 
 ' =============================================
@@ -24,7 +24,6 @@ Fin:
     Application.ScreenUpdating = True
 
 End Sub
-
 
 
 

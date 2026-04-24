@@ -1,4 +1,4 @@
-Attribute VB_Name = "BoutonPremiereLigneVide"
+﻿Attribute VB_Name = "BoutonPremiereLigneVide"
 
 Option Explicit
 
@@ -38,4 +38,3 @@ Public Sub AllerPremiereLigneVide()
 
 Fin:
 End Sub
-

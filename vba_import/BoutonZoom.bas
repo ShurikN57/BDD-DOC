@@ -1,4 +1,4 @@
-Attribute VB_Name = "BoutonZoom"
+﻿Attribute VB_Name = "BoutonZoom"
 ' =============================================
 '                BoutonZoom
 ' =============================================
@@ -86,4 +86,3 @@ Fin:
     Application.ScreenUpdating = True
 
 End Sub
-
