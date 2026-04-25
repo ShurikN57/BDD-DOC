@@ -45,8 +45,8 @@ Public Sub ExporterProjetVersGitHubEtImportExcel()
     cheminRepo = DossierRepo()
     If Len(cheminRepo) = 0 Then Exit Sub
 
-    cheminCodex = DossierCodex()
-    cheminImport = DossierImport()
+    cheminCodex = cheminRepo & "\src"
+    cheminImport = cheminRepo & "\vba_import"
 
     CreerDossierSiAbsent cheminRepo
     CreerDossierSiAbsent cheminCodex
@@ -103,7 +103,7 @@ Public Sub ImporterProjetDepuisGitHub()
     cheminRepo = DossierRepo()
     If Len(cheminRepo) = 0 Then Exit Sub
 
-    cheminImport = DossierImport()
+    cheminImport = cheminRepo & "\vba_import"
 
     If Dir(cheminImport, vbDirectory) = "" Then
         MsgBox "Dossier introuvable : " & cheminImport, vbExclamation
@@ -533,8 +533,8 @@ Public Sub VerifierPreRequisGitSync()
     cheminRepo = DossierRepo()
     If Len(cheminRepo) = 0 Then Exit Sub
 
-    cheminCodex = DossierCodex()
-    cheminImport = DossierImport()
+    cheminCodex = cheminRepo & "\src"
+    cheminImport = cheminRepo & "\vba_import"
 
     message = "Pré-check GitSync" & vbCrLf & vbCrLf
 

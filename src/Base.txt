@@ -290,6 +290,7 @@ Private Sub HandleSuiviAgent(ByVal Target As Range)
     On Error GoTo CleanFail
 
     Dim zoneConformite As Range
+    Dim zoneSuivi As Range
     Dim area As Range
     Dim arrConf As Variant, arrDate As Variant, arrNom As Variant
     Dim i As Long
@@ -302,9 +303,14 @@ Private Sub HandleSuiviAgent(ByVal Target As Range)
     Dim valConf As String
     Dim eventsWereDisabled As Boolean
     Dim colConf As Long
+    Dim colObs As Long
 
     ' --- Cache numéro de colonne (évalué une seule fois) ---
     colConf = Me.Columns(COL_CONF).Column
+    colObs = Me.Columns(COL_OBS).Column
+
+    ' --- Zone suivi AA:AB, à partir de ROW_START ---
+    Set zoneSuivi = Intersect(Target, Me.Range(COL_CONF & ROW_START & ":" & COL_OBS & Me.Rows.Count))
 
     ' --- Zone AA uniquement, à partir de ROW_START ---
     Set zoneConformite = Intersect(Target, Me.Range(COL_CONF & ROW_START & ":" & COL_CONF & Me.Rows.Count))
@@ -345,7 +351,7 @@ Private Sub HandleSuiviAgent(ByVal Target As Range)
 
     ' ===== 2. Fast-path cellule unique (cas 95%) =====
     If Target.CountLarge = 1 Then
-        If Target.Column = colConf And Target.Row >= ROW_START Then
+        If Target.Column >= colConf And Target.Column <= colObs And Target.Row >= ROW_START Then
 
             lig = Target.Row
 
@@ -370,31 +376,35 @@ Private Sub HandleSuiviAgent(ByVal Target As Range)
                 End If
             End If
 
-            Application.EnableEvents = False
-            eventsWereDisabled = True
+            If Target.Column = colConf Then
+                Application.EnableEvents = False
+                eventsWereDisabled = True
 
-            If Trim$(CStr(Target.Value)) = "" Then
-                Me.Cells(lig, COL_DATE).ClearContents
-                Me.Cells(lig, COL_NOM).ClearContents
-            Else
-                If Trim$(CStr(Me.Cells(lig, COL_DATE).Value)) = "" Then
-                    Me.Cells(lig, COL_DATE).Value = CDate(dateSession)
+                If Trim$(CStr(Target.Value)) = "" Then
+                    Me.Cells(lig, COL_DATE).ClearContents
+                    Me.Cells(lig, COL_NOM).ClearContents
+                Else
+                    If Trim$(CStr(Me.Cells(lig, COL_DATE).Value)) = "" Then
+                        Me.Cells(lig, COL_DATE).Value = CDate(dateSession)
+                    End If
+                    If Trim$(CStr(Me.Cells(lig, COL_NOM).Value)) = "" Then
+                        Me.Cells(lig, COL_NOM).Value = nomSession
+                    End If
                 End If
-                If Trim$(CStr(Me.Cells(lig, COL_NOM).Value)) = "" Then
-                    Me.Cells(lig, COL_NOM).Value = nomSession
-                End If
+
+                GoTo SortieAvecCouleur
             End If
 
-            GoTo SortieAvecCouleur
+            GoTo SortiePropre
         End If
     End If
 
     ' ===== 3. Multi-lignes : contrôle agent/date puis mise à jour Y:Z =====
-    If zoneConformite Is Nothing Then GoTo SortiePropre
+    If zoneSuivi Is Nothing Then GoTo SortiePropre
 
     ' --- Contrôle agent/date (matriciel par area) ---
     If Not ModeDeveloppeurActif Then
-        For Each area In zoneConformite.Areas
+        For Each area In zoneSuivi.Areas
             firstLig = area.Row
             lastLig = area.Row + area.Rows.Count - 1
             If firstLig < ROW_START Then firstLig = ROW_START
@@ -443,6 +453,8 @@ Private Sub HandleSuiviAgent(ByVal Target As Range)
             End If
         Next area
     End If
+
+    If zoneConformite Is Nothing Then GoTo SortiePropre
 
     ' --- Mise à jour Date/Nom (matriciel par area) ---
     Application.EnableEvents = False
@@ -928,4 +940,3 @@ Private Sub Worksheet_BeforeDoubleClick(ByVal Target As Range, Cancel As Boolean
     End If
 
 End Sub
-

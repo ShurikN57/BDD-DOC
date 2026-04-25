@@ -236,7 +236,9 @@ Public Sub ModeDeveloppeur_OFF(Optional ByVal Silencieux As Boolean = False)
 
     On Error GoTo ErrHandler
 
-    If Not ExigerMotDePasseDeveloppeur("ModeDeveloppeur_OFF") Then Exit Sub
+    If Not Silencieux Then
+        If Not ExigerMotDePasseDeveloppeur("ModeDeveloppeur_OFF") Then Exit Sub
+    End If
 
     prevScreenUpdating = Application.ScreenUpdating
     prevEnableEvents = Application.EnableEvents
