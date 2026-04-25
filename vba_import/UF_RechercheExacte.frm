@@ -48,7 +48,9 @@ Private Sub cmdRechercher_Click()
     lastRow = ws.Cells(ws.Rows.Count, COL_FIRST).End(xlUp).Row
 
     If lastRow < ROW_START Then
-        MsgBox "Aucune donnée dans la feuille.", vbExclamation
+    MettreAJourCompteurs
+    RestaurerCompteursInitiaux
+        MsgBox "Aucune donnÃ©e dans la feuille.", vbExclamation
         Exit Sub
     End If
 
@@ -113,7 +115,7 @@ Private Sub cmdReset_Click()
 
 ErrHandler:
     Application.ScreenUpdating = True
-    MsgBox "Erreur lors de la réinitialisation : " & Err.description, vbCritical
+    MsgBox "Erreur lors de la rÃ©initialisation : " & Err.description, vbCritical
 
 End Sub
 

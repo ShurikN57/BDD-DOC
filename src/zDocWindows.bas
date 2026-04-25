@@ -142,6 +142,34 @@ Public Function UrlDecodeUtf8(ByVal txt As String) As String
     End If
 
     ReDim Preserve b(0 To n - 1)
-    UrlDecodeUtf8 = StrConv(b, vbUnicode)
+    UrlDecodeUtf8 = DecodeUtf8Bytes(b)
+
+End Function
+
+Private Function DecodeUtf8Bytes(ByRef bytes() As Byte) As String
+
+    Dim stm As Object
+
+    On Error GoTo FallbackAnsi
+
+    Set stm = CreateObject("ADODB.Stream")
+    stm.Type = 1 ' adTypeBinary
+    stm.Open
+    stm.Write bytes
+    stm.Position = 0
+    stm.Type = 2 ' adTypeText
+    stm.Charset = "utf-8"
+    DecodeUtf8Bytes = stm.ReadText
+    stm.Close
+    Set stm = Nothing
+    Exit Function
+
+FallbackAnsi:
+    On Error Resume Next
+    If Not stm Is Nothing Then
+        stm.Close
+    End If
+    Set stm = Nothing
+    DecodeUtf8Bytes = StrConv(bytes, vbUnicode)
 
 End Function
