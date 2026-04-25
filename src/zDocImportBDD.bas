@@ -19,6 +19,31 @@ Private Const NOM_FORME_ACTUALISATION As String = "Actualisation"
 
 Private Const FERMER_APRES_SYNCHRO As Boolean = True
 
+Private Sub DeprotegerFeuilleSiPossible(ByVal ws As Worksheet)
+
+    On Error GoTo ErrHandler
+    ws.Unprotect Password:=MotDePasseDeveloppeur()
+    Exit Sub
+
+ErrHandler:
+    Debug.Print "[zDocImportBDD] Déprotection impossible (" & ws.Name & ") : " & Err.Number & " - " & Err.description
+    Err.Clear
+
+End Sub
+
+Private Sub ProtegerFeuilleSiPossible(ByVal ws As Worksheet)
+
+    On Error GoTo ErrHandler
+    ws.Protect Password:=MotDePasseDeveloppeur(), UserInterfaceOnly:=True, _
+               AllowFiltering:=True, AllowSorting:=True
+    Exit Sub
+
+ErrHandler:
+    Debug.Print "[zDocImportBDD] Protection impossible (" & ws.Name & ") : " & Err.Number & " - " & Err.description
+    Err.Clear
+
+End Sub
+
 ' =============================================
 ' 1. SynchroniserDonneesAgents
 ' =============================================
@@ -105,9 +130,7 @@ Public Sub SynchroniserDonneesAgents()
     End If
 
     ' ===== Déprotection de la feuille cible =====
-    On Error Resume Next
-    wsCible.Unprotect Password:=MotDePasseDeveloppeur()
-    On Error GoTo ErrHandler
+    DeprotegerFeuilleSiPossible wsCible
     cibleDeprotegee = (Not wsCible.ProtectContents)
 
     Set wsAbs = PreparerOngletRapport(wbCible, ONGLET_ID_ABSENTS)
@@ -229,12 +252,9 @@ Public Sub SynchroniserDonneesAgents()
         vbInformation
 
 SortiePropre:
-    On Error Resume Next
     If cibleDeprotegee Then
-        wsCible.Protect Password:=MotDePasseDeveloppeur(), UserInterfaceOnly:=True, _
-                         AllowFiltering:=True, AllowSorting:=True
+        ProtegerFeuilleSiPossible wsCible
     End If
-    On Error GoTo 0
 
     Application.Calculation = prevCalculation
     Application.EnableEvents = prevEnableEvents
@@ -258,11 +278,10 @@ Private Sub FinaliserEtFermerApresSynchronisation(ByVal wbSource As Workbook, _
                                                   ByVal prevEnableEvents As Boolean, _
                                                   ByVal prevScreenUpdating As Boolean)
 
-    On Error Resume Next
+    On Error GoTo ErrHandler
 
     If cibleDeprotegee Then
-        wsCible.Protect Password:=MotDePasseDeveloppeur(), UserInterfaceOnly:=True, _
-                        AllowFiltering:=True, AllowSorting:=True
+        ProtegerFeuilleSiPossible wsCible
     End If
 
     Application.CutCopyMode = False
@@ -285,7 +304,12 @@ Private Sub FinaliserEtFermerApresSynchronisation(ByVal wbSource As Workbook, _
 
     wbCible.Close SaveChanges:=True
 
-    On Error GoTo 0
+    Exit Sub
+
+ErrHandler:
+    Debug.Print "[zDocImportBDD] FinaliserEtFermerApresSynchronisation : " & Err.Number & " - " & Err.description
+    Err.Clear
+    Resume Next
 
 End Sub
 
@@ -416,9 +440,7 @@ Private Function PreparerOngletRapport(ByVal wb As Workbook, ByVal nomOnglet As 
 
     Dim ws As Worksheet
 
-    On Error Resume Next
-    Set ws = wb.Worksheets(nomOnglet)
-    On Error GoTo 0
+    Set ws = GetWorksheetSafe(wb, nomOnglet)
 
     If ws Is Nothing Then
         Set ws = wb.Worksheets.Add(After:=wb.Worksheets(wb.Worksheets.Count))
@@ -548,9 +570,11 @@ End Function
 ' =============================================
 Private Function GetWorksheetSafe(ByVal wb As Workbook, ByVal nomOnglet As String) As Worksheet
 
+    ' Test d'existence d'une feuille : bloc local tolérant et borné
     On Error Resume Next
     Set GetWorksheetSafe = wb.Worksheets(nomOnglet)
     On Error GoTo 0
+    Err.Clear
 
 End Function
 
@@ -559,7 +583,7 @@ End Function
 ' =============================================
 Private Sub NettoyerContexteApresSynchronisation(ByVal wbCible As Workbook, ByVal wsCible As Worksheet)
 
-    On Error Resume Next
+    On Error GoTo Fin
 
     Application.CutCopyMode = False
     DoEvents
@@ -570,7 +594,8 @@ Private Sub NettoyerContexteApresSynchronisation(ByVal wbCible As Workbook, ByVa
 
     Application.CutCopyMode = False
 
-    On Error GoTo 0
+Fin:
+    Err.Clear
 
 End Sub
 
@@ -625,9 +650,7 @@ Private Function GetOrCreateSheetSynchro(ByVal wb As Workbook) As Worksheet
 
     Dim ws As Worksheet
 
-    On Error Resume Next
-    Set ws = wb.Worksheets("Synchro")
-    On Error GoTo 0
+    Set ws = GetWorksheetSafe(wb, "Synchro")
 
     If ws Is Nothing Then
         Set ws = wb.Worksheets.Add(After:=wb.Worksheets(wb.Worksheets.Count))
