@@ -1,4 +1,4 @@
-ï»¿Attribute VB_Name = "zDocCollage"
+Attribute VB_Name = "zDocCollage"
 Option Explicit
 
 Public CollageValeursEnCours As Boolean
@@ -92,7 +92,7 @@ Public Sub CollerValeursRecherche()
             On Error GoTo FinAvecErreur
 
             If zoneVisible Is Nothing Then
-                MsgBox "Aucune cellule visible sÃ©lectionnÃ©e.", vbExclamation
+                MsgBox "Aucune cellule visible sélectionnée.", vbExclamation
                 GoTo Fin
             End If
 
@@ -105,7 +105,7 @@ Public Sub CollerValeursRecherche()
     Set cibleReelleCollage = ConstruirePlageReelleCollage(ws, cibleFinale)
 
     If cibleReelleCollage Is Nothing Then
-        MsgBox "Impossible de dÃ©terminer la taille rÃ©elle du collage. Recopiez puis recollez.", vbExclamation
+        MsgBox "Impossible de déterminer la taille réelle du collage. Recopiez puis recollez.", vbExclamation
         GoTo Fin
     End If
 
@@ -115,13 +115,13 @@ Public Sub CollerValeursRecherche()
     End If
 
     If Application.CutCopyMode = 0 Then
-        MsgBox "Le contenu copiÃ© a Ã©tÃ© perdu. Recopiez puis recollez.", vbExclamation
+        MsgBox "Le contenu copié a été perdu. Recopiez puis recollez.", vbExclamation
         GoTo Fin
     End If
 
     bValeurUnique = False
 
-    ' ===== Cas filtre + sÃ©lection discontinue =====
+    ' ===== Cas filtre + sélection discontinue =====
     If cibleReelleCollage.Areas.Count > 1 Then
 
         If DerniereCopieValeurUniqueValide Then
@@ -132,7 +132,7 @@ Public Sub CollerValeursRecherche()
         End If
 
         If Not bValeurUnique Then
-            MsgBox "Sous filtre, seul le collage d'une valeur unique sur plusieurs lignes visibles est autorisÃ©." & vbCrLf & vbCrLf & _
+            MsgBox "Sous filtre, seul le collage d'une valeur unique sur plusieurs lignes visibles est autorisé." & vbCrLf & vbCrLf & _
                    "Pour un collage multi-cellules, retirez le filtre ou collez sur une zone continue.", vbExclamation
             GoTo Fin
         End If
@@ -201,7 +201,7 @@ Public Sub CollerValeursRecherche()
                    And vCheck <> LCase$(VAL_CONF_3) Then
 
                     AnnulerDerniereAction
-                    MsgBox "Valeur non autorisÃ©e en colonne " & COL_CONF & "." & vbCrLf & MSG_VALEURS_CONF, vbExclamation
+                    MsgBox "Valeur non autorisée en colonne " & COL_CONF & "." & vbCrLf & MSG_VALEURS_CONF, vbExclamation
                     GoTo Fin
                 End If
             End If
@@ -494,4 +494,5 @@ Private Function ConstruirePlageReelleCollage(ByVal ws As Worksheet, ByVal cible
     Set ConstruirePlageReelleCollage = rngResult
 
 End Function
+
 

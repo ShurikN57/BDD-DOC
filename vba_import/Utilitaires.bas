@@ -1,4 +1,4 @@
-﻿Attribute VB_Name = "Utilitaires"
+Attribute VB_Name = "Utilitaires"
 Option Explicit
 
 ' =============================================

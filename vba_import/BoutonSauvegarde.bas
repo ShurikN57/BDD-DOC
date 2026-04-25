@@ -1,4 +1,4 @@
-ï»¿Attribute VB_Name = "BoutonSauvegarde"
+Attribute VB_Name = "BoutonSauvegarde"
 Option Explicit
 
 ' =============================================
@@ -14,7 +14,7 @@ Public Sub SauvegarderClasseur()
     ThisWorkbook.Save
 
     If SauvegardeAutorisee Then
-        MsgBox "Classeur sauvegardÃ©, merci pour votre contribution Ã  ce projet.", vbInformation
+        MsgBox "Classeur sauvegardé, merci pour votre contribution à ce projet.", vbInformation
     End If
 
     Exit Sub
@@ -23,4 +23,5 @@ ErrHandler:
     MsgBox "Erreur lors de la sauvegarde : " & Err.description, vbExclamation
 
 End Sub
+
 

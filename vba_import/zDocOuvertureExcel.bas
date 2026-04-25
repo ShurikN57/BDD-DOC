@@ -1,19 +1,19 @@
-ÔªøAttribute VB_Name = "zDocOuvertureExcel"
+Attribute VB_Name = "zDocOuvertureExcel"
 Option Explicit
 
 ' =============================================
 ' Ouverture d'un document Excel et ciblage
-' d'une ligne / cellule selon les m√©tadonn√©es
+' d'une ligne / cellule selon les mÈtadonnÈes
 '
 ' Contrat :
 ' - filePath  : chemin local ou file://...
 ' - sheetInfo : format attendu "XLS:NomOnglet"
-' - lineNum   : num√©ro de ligne Excel (> 0)
-' - searchText / fullText : texte √† rechercher sur la ligne cible
+' - lineNum   : numÈro de ligne Excel (> 0)
+' - searchText / fullText : texte ‡ rechercher sur la ligne cible
 '
 ' Comportement :
-' - ouvre le classeur s'il n'est pas d√©j√† ouvert
-' - active l'onglet demand√©
+' - ouvre le classeur s'il n'est pas dÈj‡ ouvert
+' - active l'onglet demandÈ
 ' - tente de trouver searchText puis fullText sur la ligne cible
 ' - sinon se positionne sur A{ligne}
 ' =============================================
@@ -97,13 +97,13 @@ Public Sub OpenExcelAtSheetAndLine(ByVal filePath As String, ByVal sheetInfo As 
     End If
 
     If Not IsNumeric(lineNum) Then
-        MsgBox "Num√©ro de ligne Excel invalide en colonne L.", vbExclamation
+        MsgBox "NumÈro de ligne Excel invalide en colonne L.", vbExclamation
         Exit Sub
     End If
 
     targetLine = CLng(lineNum)
     If targetLine <= 0 Then
-        MsgBox "Le num√©ro de ligne Excel doit √™tre sup√©rieur √† 0.", vbExclamation
+        MsgBox "Le numÈro de ligne Excel doit Ítre supÈrieur ‡ 0.", vbExclamation
         Exit Sub
     End If
 
@@ -141,7 +141,7 @@ Public Sub OpenExcelAtSheetAndLine(ByVal filePath As String, ByVal sheetInfo As 
     xlWs.Activate
 
     If targetLine > xlWs.Rows.Count Then
-        MsgBox "Le num√©ro de ligne demand√© d√©passe la taille de la feuille.", vbExclamation
+        MsgBox "Le numÈro de ligne demandÈ dÈpasse la taille de la feuille.", vbExclamation
         Exit Sub
     End If
 
@@ -182,4 +182,5 @@ Private Function ExtractSheetName(ByVal sheetInfo As String) As String
     End If
 
 End Function
+
 

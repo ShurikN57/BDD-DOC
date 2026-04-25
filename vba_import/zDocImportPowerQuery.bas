@@ -1,4 +1,4 @@
-ï»¿Attribute VB_Name = "zDocImportPowerQuery"
+Attribute VB_Name = "zDocImportPowerQuery"
 Option Explicit
 
 ' ============================================================
@@ -7,7 +7,7 @@ Option Explicit
 ' Cible  : ThisWorkbook (BDD-DOC)
 ' ============================================================
 
-Private Const NOM_CLASSEUR_SOURCE As String = "comparaison-PowerQuerry-24-04"   ' Ã  adapter au nom rÃ©el sans extension
+Private Const NOM_CLASSEUR_SOURCE As String = "comparaison-PowerQuerry-24-04"   ' à adapter au nom réel sans extension
 Private Const NOM_ONGLET_SOURCE As String = "REF-RF"
 Private Const NOM_FEUILLE_ARCHIVE As String = "ID_supprimes_conformes"
 
@@ -66,7 +66,7 @@ Public Sub ImporterDepuisFichierPowerQuery()
     RemplacerBaseDepuisSource wsCible, wsSource
     ReinjecterColonnesSuivi wsCible, dictAncien
 
-    MsgBox "Import depuis le fichier Power Query terminÃ©.", vbInformation
+    MsgBox "Import depuis le fichier Power Query terminé.", vbInformation
 
 SortiePropre:
     Application.Calculation = oldCalc
@@ -321,4 +321,5 @@ Private Function ExtraireLigne(ByRef arr As Variant, ByVal rowIndex As Long, ByV
     ExtraireLigne = ligne
 
 End Function
+
 

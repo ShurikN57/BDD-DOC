@@ -1,19 +1,19 @@
-ï»¿Attribute VB_Name = "zDocOuvertureWord"
+Attribute VB_Name = "zDocOuvertureWord"
 Option Explicit
 
 ' =============================================
-' Ouverture d'un document Word Ã  proximitÃ©
+' Ouverture d'un document Word à proximité
 ' d'une page cible puis recherche/surlignage d'un texte
 '
 ' Contrat :
 ' - filePath : chemin local ou file://...
-' - pageNum  : numÃ©ro de page attendu (colonne J)
-' - searchText : texte RF/REF Ã  rechercher
+' - pageNum  : numéro de page attendu (colonne J)
+' - searchText : texte RF/REF à rechercher
 '
 ' Comportement :
 ' - ouvre le document
 ' - calcule le nombre de pages
-' - cherche sur la page cible puis autour : +1, -1, +2, -2 ... jusqu'Ã  Â±5
+' - cherche sur la page cible puis autour : +1, -1, +2, -2 ... jusqu'à ±5
 ' =============================================
 
 Private Const WD_WINDOW_STATE_MAXIMIZE As Long = 1
@@ -63,13 +63,13 @@ Public Sub OpenWordAtPageAndHighlight(ByVal filePath As String, ByVal pageNum As
     End If
 
     If Not IsNumeric(pageNum) Then
-        MsgBox "Le numÃ©ro de page en colonne J n'est pas valide.", vbExclamation
+        MsgBox "Le numéro de page en colonne J n'est pas valide.", vbExclamation
         Exit Sub
     End If
 
     pageTarget = CLng(pageNum)
     If pageTarget <= 0 Then
-        MsgBox "Le numÃ©ro de page doit Ãªtre supÃ©rieur Ã  0.", vbExclamation
+        MsgBox "Le numéro de page doit être supérieur à 0.", vbExclamation
         Exit Sub
     End If
 
@@ -85,7 +85,7 @@ Public Sub OpenWordAtPageAndHighlight(ByVal filePath As String, ByVal pageNum As
 
     totalPages = wdDoc.ComputeStatistics(WD_STATISTIC_PAGES)
     If totalPages <= 0 Then
-        MsgBox "Impossible de dÃ©terminer le nombre de pages du document Word.", vbExclamation
+        MsgBox "Impossible de déterminer le nombre de pages du document Word.", vbExclamation
         Exit Sub
     End If
 
@@ -94,7 +94,7 @@ Public Sub OpenWordAtPageAndHighlight(ByVal filePath As String, ByVal pageNum As
     ok = HighlightTextOnSpecificPage(wdDoc, pageTarget, searchText, totalPages)
 
     If Not ok Then
-        MsgBox "Texte non trouvÃ© autour de la page " & pageTarget & " (recherche Â±5) :" & vbCrLf & searchText, vbInformation
+        MsgBox "Texte non trouvé autour de la page " & pageTarget & " (recherche ±5) :" & vbCrLf & searchText, vbInformation
     End If
 
     Exit Sub
@@ -105,8 +105,8 @@ ErrHandler:
 End Sub
 
 ' =============================================
-' Recherche sur la page cible puis Ã  proximitÃ© :
-' +1, -1, +2, -2 ... jusqu'Ã  Â±5
+' Recherche sur la page cible puis à proximité :
+' +1, -1, +2, -2 ... jusqu'à ±5
 ' =============================================
 Private Function HighlightTextOnSpecificPage(ByVal wdDoc As Object, ByVal pageNum As Long, _
                                              ByVal rawSearch As String, ByVal totalPages As Long) As Boolean
@@ -198,7 +198,7 @@ End Function
 
 ' =============================================
 ' Construit un motif de recherche souple
-' pour RF/REF concatÃ©nÃ©es avec espaces variables
+' pour RF/REF concaténées avec espaces variables
 ' =============================================
 Public Function BuildSearchPattern(ByVal ref As String) As String
 
@@ -243,7 +243,7 @@ Public Function BuildSearchPattern(ByVal ref As String) As String
 End Function
 
 ' =============================================
-' RÃ©cupÃ¨re la plage correspondant Ã  une page Word
+' Récupère la plage correspondant à une page Word
 ' =============================================
 Private Function GetRangeOfPage(ByVal wdDoc As Object, ByVal pageNum As Long, _
                                 ByVal totalPages As Long) As Object
@@ -270,4 +270,5 @@ ErrHandler:
     Set GetRangeOfPage = Nothing
 
 End Function
+
 

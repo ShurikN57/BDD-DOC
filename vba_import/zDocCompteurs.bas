@@ -1,4 +1,4 @@
-ï»¿Attribute VB_Name = "zDocCompteurs"
+Attribute VB_Name = "zDocCompteurs"
 ' =============================================
 ' Remplace les 4 formules lourdes de MENU DEROULANT J1:M1
 '
@@ -119,13 +119,13 @@ SortiePropre:
     Exit Sub
 
 ErrHandler:
-    MsgBox "Erreur lors de la mise Ã  jour des compteurs : " & Err.description, vbExclamation
+    MsgBox "Erreur lors de la mise à jour des compteurs : " & Err.description, vbExclamation
     Resume SortiePropre
 
 End Sub
 
 ' =============================================
-' Comptage simultanÃ© des 3 colonnes
+' Comptage simultané des 3 colonnes
 ' =============================================
 Private Sub CompterUniques3Colonnes(ByVal arrA As Variant, ByVal arrU As Variant, ByVal arrI As Variant, _
                                     ByVal dictRF As Object, ByVal dictID As Object, ByVal dictREF As Object)
@@ -215,20 +215,20 @@ End Sub
 '
 ' Contrat d'appel :
 ' - les formes Excel doivent appeler uniquement ces wrappers
-' - ces wrappers dÃ©lÃ¨guent la logique aux modules spÃ©cialisÃ©s
+' - ces wrappers délèguent la logique aux modules spécialisés
 '
-' Affectations conseillÃ©es :
+' Affectations conseillées :
 ' - Bouton "Appliquer" -> AppliquerFiltresDoc
 ' - Bouton "Effacer"   -> EffacerFiltresDoc
 '
-' DÃ©pendances :
-' - AppliquerFiltresDoc dÃ©pend de :
+' Dépendances :
+' - AppliquerFiltresDoc dépend de :
 '     BoutonAppliquerFiltres.AppliquerFiltres
 '     zDocCompteurs.MettreAJourCompteurs
-' - EffacerFiltresDoc dÃ©pend de :
+' - EffacerFiltresDoc dépend de :
 '     BoutonEffacerFiltres.EffacerFiltres
 '     zDocCompteurs.RestaurerCompteursInitiaux
-' - InitialiserPlaceholdersFeuillePrincipale dÃ©pend de :
+' - InitialiserPlaceholdersFeuillePrincipale dépend de :
 '     Base.InitialiserPlaceholders
 ' =============================================
 
@@ -245,5 +245,6 @@ End Sub
 Public Sub InitialiserPlaceholdersFeuillePrincipale()
     Base.InitialiserPlaceholders
 End Sub
+
 
 

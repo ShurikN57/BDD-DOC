@@ -1,4 +1,4 @@
-﻿Attribute VB_Name = "BoutonRFPrincipal"
+Attribute VB_Name = "BoutonRFPrincipal"
 Option Explicit
 
 ' =============================================
@@ -16,3 +16,4 @@ Fin:
     End If
 
 End Sub
+

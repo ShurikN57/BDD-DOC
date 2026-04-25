@@ -1,11 +1,11 @@
-ï»¿VERSION 5.00
+VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} UF_RechercheExacte 
    Caption         =   "Recherche exacte RF principal"
    ClientHeight    =   1332
    ClientLeft      =   390
    ClientTop       =   1545
    ClientWidth     =   4560
-   OleObjectBlob   =   "UF_RechercheExacte_codex.frx":0000
+   OleObjectBlob   =   "UF_RechercheExacte.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
 Attribute VB_Name = "UF_RechercheExacte"
@@ -48,7 +48,7 @@ Private Sub cmdRechercher_Click()
     lastRow = ws.Cells(ws.Rows.Count, COL_FIRST).End(xlUp).Row
 
     If lastRow < ROW_START Then
-        MsgBox "Aucune donnÃ©e dans la feuille.", vbExclamation
+        MsgBox "Aucune donnée dans la feuille.", vbExclamation
         Exit Sub
     End If
 
@@ -113,7 +113,7 @@ Private Sub cmdReset_Click()
 
 ErrHandler:
     Application.ScreenUpdating = True
-    MsgBox "Erreur lors de la rÃ©initialisation : " & Err.description, vbCritical
+    MsgBox "Erreur lors de la réinitialisation : " & Err.description, vbCritical
 
 End Sub
 

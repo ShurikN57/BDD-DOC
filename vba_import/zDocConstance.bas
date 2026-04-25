@@ -1,4 +1,4 @@
-ï»¿Attribute VB_Name = "zDocConstance"
+Attribute VB_Name = "zDocConstance"
 Option Explicit
 
 ' =============================================
@@ -84,13 +84,13 @@ Public Const COL_OBS As String = "AB"
 ' =============================================
 ' FACTORISATION - EDITION / PROTECTION
 ' =============================================
-' BDD-DOC : seules les colonnes AA:AB sont Ã©ditables par l'agent.
-' Les colonnes A:X sont en lecture seule (donnÃ©es Power Query).
+' BDD-DOC : seules les colonnes AA:AB sont éditables par l'agent.
+' Les colonnes A:X sont en lecture seule (données Power Query).
 ' Les colonnes Y:Z sont remplies automatiquement par VBA.
 ' PLAGE_EDITABLE_MAIN et PLAGE_EDITABLE_AIDE restent vides
-' car elles sont testÃ©es par les modules partagÃ©s (DeveloppeurOnOFF).
-Public Const PLAGE_EDITABLE_MAIN As String = ""      ' pas de zone Ã©ditable principale (pas de saisie RF)
-Public Const PLAGE_EDITABLE_SUIVI As String = "AA:AB" ' conformitÃ© + observations
+' car elles sont testées par les modules partagés (DeveloppeurOnOFF).
+Public Const PLAGE_EDITABLE_MAIN As String = ""      ' pas de zone éditable principale (pas de saisie RF)
+Public Const PLAGE_EDITABLE_SUIVI As String = "AA:AB" ' conformité + observations
 Public Const PLAGE_EDITABLE_AIDE As String = ""       ' pas de colonne aide dans BDD-DOC
 
 Public Const COL_VALIDATION_CONF As String = "AA"
@@ -98,12 +98,12 @@ Public Const COL_VALIDATION_CONF As String = "AA"
 ' =============================================
 ' FACTORISATION - COLLAGE
 ' =============================================
-' BDD-DOC : le collage n'est autorisÃ© que dans la barre de recherche
+' BDD-DOC : le collage n'est autorisé que dans la barre de recherche
 ' et dans les colonnes suivi (AA:AB).
-' PLAGE_COLLER_EDITABLE reste vide car les donnÃ©es A:X ne sont pas
-' modifiables par collage (modules partagÃ©s testent cette constante).
+' PLAGE_COLLER_EDITABLE reste vide car les données A:X ne sont pas
+' modifiables par collage (modules partagés testent cette constante).
 Public Const PLAGE_COLLER_RECHERCHE As String = "A2:AB2"
-Public Const PLAGE_COLLER_EDITABLE As String = ""     ' pas de collage dans les donnÃ©es RF
+Public Const PLAGE_COLLER_EDITABLE As String = ""     ' pas de collage dans les données RF
 Public Const PLAGE_COLLER_SUIVI As String = "AA:AB"
 
 ' =============================================
@@ -113,7 +113,7 @@ Public Const VAL_CONF_1 As String = "conforme"
 Public Const VAL_CONF_2 As String = "non conforme"
 Public Const VAL_CONF_3 As String = "lien incorrect"
 
-Public Const MSG_VALEURS_CONF As String = "Valeurs autorisÃ©es : conforme, non conforme ou lien incorrect."
+Public Const MSG_VALEURS_CONF As String = "Valeurs autorisées : conforme, non conforme ou lien incorrect."
 
 ' =============================================
 ' BOUTON RECHERCHE RF PRINCIPAL
@@ -142,11 +142,11 @@ Public Const ROW_AGENTS_END As Long = 44
 ' =============================================
 ' COMPORTEMENT
 ' =============================================
-' Flags utilisÃ©s par les modules partagÃ©s pour activer/dÃ©sactiver
-' des fonctionnalitÃ©s selon le classeur (BDD-RF ou BDD-DOC).
+' Flags utilisés par les modules partagés pour activer/désactiver
+' des fonctionnalités selon le classeur (BDD-RF ou BDD-DOC).
 Public Const HAS_MAIN_EDIT_ZONE As Boolean = False     ' BDD-DOC : pas de saisie RF (colonnes A:X en lecture seule)
 Public Const HAS_AIDE_ZONE As Boolean = False           ' BDD-DOC : pas de colonne aide
-Public Const HAS_DOC_DOUBLECLICK As Boolean = True      ' BDD-DOC : double-clic ouvre le document liÃ©
+Public Const HAS_DOC_DOUBLECLICK As Boolean = True      ' BDD-DOC : double-clic ouvre le document lié
 Public Const HAS_RECHERCHE_EXACTE As Boolean = True
 Public Const HAS_COLONNES_MASQUEES As Boolean = True    ' colonnes P:X masquables
 Public Const HAS_PREMIERE_LIGNE_VIDE As Boolean = True
@@ -175,6 +175,7 @@ Public Const COLOR_CONF_LIEN_INCORRECT As Long = 7531262 ' RGB(254, 234, 114) / 
 Public Const MAX_SELECTION_CHANGE As Long = 500
 Public Const SEUIL_CONFIRMATION_MASSE As Long = 2000
 Public Const SEUIL_BLOCAGE_MASSE As Long = 15000
+
 
 
 

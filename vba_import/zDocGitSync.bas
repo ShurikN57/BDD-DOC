@@ -1,10 +1,10 @@
-ï»¿Attribute VB_Name = "zDocGitSync"
+Attribute VB_Name = "zDocGitSync"
 Option Explicit
 
 ' =============================================
 ' Synchronisation BDD-DOC <-> GitHub / Codex
 ' - src        = version UTF-8 lisible pour GitHub / Codex
-' - vba_import = version native rÃ©importable dans Excel
+' - vba_import = version native réimportable dans Excel
 ' =============================================
 
 Private Const DOSSIER_REPO_PC1 As String = "C:\Users\FMF00CDN\Desktop\BDD-DOC-GitHub\BDD-DOC"
@@ -83,14 +83,14 @@ Public Sub ExporterProjetVersGitHubEtImportExcel()
 SuiteComposant:
     Next vbComp
 
-    MsgBox "Export terminÃ© :" & vbCrLf & _
+    MsgBox "Export terminé :" & vbCrLf & _
            "- GitHub / Codex : " & cheminCodex & vbCrLf & _
-           "- RÃ©import Excel : " & cheminImport, vbInformation
+           "- Réimport Excel : " & cheminImport, vbInformation
 
 End Sub
 
 ' =============================================
-' 2. Import depuis le dÃ©pÃ´t local
+' 2. Import depuis le dépôt local
 ' =============================================
 Public Sub ImporterProjetDepuisGitHub()
 
@@ -450,7 +450,7 @@ Private Function DossierRepo() As String
         Exit Function
     End If
 
-    MsgBox "Aucun dossier repo valide trouvÃ©." & vbCrLf & vbCrLf & _
+    MsgBox "Aucun dossier repo valide trouvé." & vbCrLf & vbCrLf & _
            "PC1 : " & DOSSIER_REPO_PC1 & vbCrLf & _
            "PC2 : " & DOSSIER_REPO_PC2, vbExclamation
 
@@ -531,12 +531,12 @@ Public Sub VerifierPreRequisGitSync()
     cheminCodex = DossierCodex()
     cheminImport = DossierImport()
 
-    message = "PrÃ©-check GitSync" & vbCrLf & vbCrLf
+    message = "Pré-check GitSync" & vbCrLf & vbCrLf
 
     If ProjetVBAccessible() Then
-        message = message & "[OK] AccÃ¨s VBProject" & vbCrLf
+        message = message & "[OK] Accès VBProject" & vbCrLf
     Else
-        message = message & "[KO] AccÃ¨s VBProject" & vbCrLf
+        message = message & "[KO] Accès VBProject" & vbCrLf
     End If
 
     CreerDossierSiAbsent cheminRepo
@@ -546,7 +546,7 @@ Public Sub VerifierPreRequisGitSync()
     message = message & IIf(TesterEcritureDossier(cheminRepo), "[OK]", "[KO]") & " Dossier repo: " & cheminRepo & vbCrLf
     message = message & IIf(TesterEcritureDossier(cheminCodex), "[OK]", "[KO]") & " Dossier src: " & cheminCodex & vbCrLf
     message = message & IIf(TesterEcritureDossier(cheminImport), "[OK]", "[KO]") & " Dossier import: " & cheminImport & vbCrLf & vbCrLf
-    message = message & "Chemins testÃ©s :" & vbCrLf & _
+    message = message & "Chemins testés :" & vbCrLf & _
               "PC1 : " & DOSSIER_REPO_PC1 & vbCrLf & _
               "PC2 : " & DOSSIER_REPO_PC2
 
@@ -586,10 +586,10 @@ Private Function ProjetVBAccessible() As Boolean
     Exit Function
 
 ErrHandler:
-    MsgBox "AccÃ¨s refusÃ© au projet VBA." & vbCrLf & _
+    MsgBox "Accès refusé au projet VBA." & vbCrLf & _
            "Active l'option :" & vbCrLf & _
-           "Fichier > Options > Centre de gestion de la confidentialitÃ© > ParamÃ¨tres des macros > " & _
-           "AccÃ¨s approuvÃ© au modÃ¨le d'objet du projet VBA.", vbExclamation
+           "Fichier > Options > Centre de gestion de la confidentialité > Paramètres des macros > " & _
+           "Accès approuvé au modèle d'objet du projet VBA.", vbExclamation
 
 End Function
 
@@ -624,5 +624,6 @@ Private Sub SupprimerComposantSiExiste(ByVal nomComp As String, ByVal typeAttend
     ThisWorkbook.VBProject.VBComponents.Remove vbComp
 
 End Sub
+
 
 

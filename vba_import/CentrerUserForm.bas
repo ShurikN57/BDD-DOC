@@ -1,4 +1,4 @@
-ï»¿Attribute VB_Name = "CentrerUserForm"
+Attribute VB_Name = "CentrerUserForm"
 Option Explicit
 
 #If VBA7 Then
@@ -58,7 +58,7 @@ Public Sub CentrerUserFormSurMoniteurExcel(ByVal frm As Object, _
 
     frm.StartUpPosition = 0
 
-    ' --- DPI rÃ©el de l'Ã©cran ---
+    ' --- DPI réel de l'écran ---
     hDC = GetDC(Application.hwnd)
     If hDC <> 0 Then
         dpiX = GetDeviceCaps(hDC, LOGPIXELSX)
@@ -92,6 +92,7 @@ Fallback:
     frm.Top = Application.Top + (Application.Height - frm.Height) * ratioTop
 
 End Sub
+
 
 
 

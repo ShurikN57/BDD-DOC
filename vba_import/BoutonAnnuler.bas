@@ -1,17 +1,17 @@
-ï»¿Attribute VB_Name = "BoutonAnnuler"
+Attribute VB_Name = "BoutonAnnuler"
 Option Explicit
 ' =============================================
 '               Bouton Annuler
 ' =============================================
-' Logique conservÃ©e :
+' Logique conservée :
 ' - SauvegarderEtatCandidat / SauvegarderEtat / ValiderEtatCandidatCommeUndo
-' - AnnulerDerniereAction reste dÃ©diÃ© au rejet de saisie / rollback interne
+' - AnnulerDerniereAction reste dédié au rejet de saisie / rollback interne
 '
 ' Nouveau :
 ' - Gestion correcte des zones multiples (filtre actif / multi-blocs)
 ' - AnnulerUnique = annule 1 action utilisateur
 ' - RefaireUnique = remet 1 action utilisateur
-' - Historique limitÃ© Ã  10 niveaux
+' - Historique limité à 10 niveaux
 ' =============================================
 
 ' =============================================
@@ -399,7 +399,7 @@ Public Sub AnnulerDerniereAction()
     On Error GoTo Fin
 
     If BackupSheet = "" Or Not TableauRenseigne(BackupMainAddresses) Then
-        MsgBox "Aucune action Ã  annuler.", vbExclamation
+        MsgBox "Aucune action à annuler.", vbExclamation
         Exit Sub
     End If
 
@@ -451,7 +451,7 @@ Public Sub AnnulerUnique()
     On Error GoTo Fin
 
     If UndoTop = 0 Then
-        MsgBox "Aucune action Ã  annuler.", vbExclamation
+        MsgBox "Aucune action à annuler.", vbExclamation
         Exit Sub
     End If
 
@@ -490,7 +490,7 @@ Public Sub RefaireUnique()
     On Error GoTo Fin
 
     If RedoTop = 0 Then
-        MsgBox "Aucune action Ã  remettre.", vbExclamation
+        MsgBox "Aucune action à remettre.", vbExclamation
         Exit Sub
     End If
 
@@ -510,7 +510,7 @@ Public Sub RefaireUnique()
 
 Fin:
     If Err.Number <> 0 Then
-        MsgBox "Erreur lors du rÃ©tablissement : " & Err.description, vbExclamation
+        MsgBox "Erreur lors du rétablissement : " & Err.description, vbExclamation
     End If
 
     Application.ScreenUpdating = True
@@ -574,7 +574,7 @@ Public Sub DebugReinitialiserHistorique()
     CandidateLinkedAddresses = Empty
     CandidateLinkedDatas = Empty
 
-    MsgBox "Historique rÃ©initialisÃ©.", vbInformation
+    MsgBox "Historique réinitialisé.", vbInformation
 
 End Sub
 
@@ -645,5 +645,6 @@ Private Function ConstruireAdresseLignesImpactees(ByVal ws As Worksheet, _
 Fin:
 
 End Function
+
 
 

@@ -1,4 +1,4 @@
-ï»¿Attribute VB_Name = "AuditPerformance"
+Attribute VB_Name = "AuditPerformance"
 Option Explicit
 
 ' ============================================================
@@ -8,17 +8,17 @@ Option Explicit
 ' - UsedRange
 ' - Nb cellules avec formule
 ' - Nb cellules avec formule volatile potentielle
-' - Nb rÃ¨gles de MFC
+' - Nb règles de MFC
 ' - Nb formes
 ' - Nb hyperliens
-' - Nb validations de donnÃ©es
+' - Nb validations de données
 ' - Nb commentaires / notes
-' - Nb cellules fusionnÃ©es
-' - Nb objets OLE / contrÃ´les
-' - Nb noms dÃ©finis
+' - Nb cellules fusionnées
+' - Nb objets OLE / contrôles
+' - Nb noms définis
 '
 ' Sortie :
-' - feuille AUDIT_PERF recrÃ©Ã©e Ã  chaque lancement
+' - feuille AUDIT_PERF recréée à chaque lancement
 ' ============================================================
 
 Private Const SHEET_AUDIT As String = "AUDIT_PERF"
@@ -158,13 +158,13 @@ Private Sub PreparerFeuilleAudit(ByVal wsAudit As Worksheet)
     wsAudit.Cells(1, 5).Value = "Nb cellules"
     wsAudit.Cells(1, 6).Value = "Nb formules"
     wsAudit.Cells(1, 7).Value = "Nb formules volatiles"
-    wsAudit.Cells(1, 8).Value = "Nb rÃ¨gles MFC"
+    wsAudit.Cells(1, 8).Value = "Nb règles MFC"
     wsAudit.Cells(1, 9).Value = "Nb formes"
     wsAudit.Cells(1, 10).Value = "Nb hyperliens"
     wsAudit.Cells(1, 11).Value = "Nb validations"
     wsAudit.Cells(1, 12).Value = "Nb commentaires/notes"
     wsAudit.Cells(1, 13).Value = "Nb fusions"
-    wsAudit.Cells(1, 14).Value = "Nb OLE/contrÃ´les"
+    wsAudit.Cells(1, 14).Value = "Nb OLE/contrôles"
     wsAudit.Cells(1, 15).Value = "Score risque"
     wsAudit.Cells(1, 16).Value = "Diagnostic"
 
@@ -209,7 +209,7 @@ Private Sub SupprimerFeuilleAuditSiExiste(ByVal wb As Workbook)
 End Sub
 
 ' ============================================================
-' SynthÃ¨se classeur
+' Synthèse classeur
 ' ============================================================
 Private Sub EcrireBlocSynthese(ByVal wb As Workbook, ByVal wsAudit As Worksheet, ByVal startRow As Long)
 
@@ -221,10 +221,10 @@ Private Sub EcrireBlocSynthese(ByVal wb As Workbook, ByVal wsAudit As Worksheet,
 
     wsAudit.Cells(startRow, 1).Value = "SYNTHESE CLASSEUR"
     wsAudit.Cells(startRow, 1).Font.Bold = True
-    wsAudit.Cells(startRow + 1, 1).Value = "Nb feuilles analysÃ©es"
+    wsAudit.Cells(startRow + 1, 1).Value = "Nb feuilles analysées"
     wsAudit.Cells(startRow + 1, 2).Value = wb.Worksheets.Count - 1
 
-    wsAudit.Cells(startRow + 2, 1).Value = "Nb noms dÃ©finis"
+    wsAudit.Cells(startRow + 2, 1).Value = "Nb noms définis"
     wsAudit.Cells(startRow + 2, 2).Value = nbNoms
 
     wsAudit.Cells(startRow + 3, 1).Value = "Nb liens externes"
@@ -473,7 +473,7 @@ Private Function DiagnosticFeuille(ByVal nbCells As Double, _
 
     Dim msg As String
 
-    If nbCells > 500000 Then msg = msg & "UsedRange trÃ¨s large; "
+    If nbCells > 500000 Then msg = msg & "UsedRange très large; "
     If nbFormules > 10000 Then msg = msg & "beaucoup de formules; "
     If nbVolatiles > 0 Then msg = msg & "formules volatiles; "
     If nbMFC > 1000 Then msg = msg & "beaucoup de MFC; "
@@ -481,8 +481,8 @@ Private Function DiagnosticFeuille(ByVal nbCells As Double, _
     If nbHyperlinks > 1000 Then msg = msg & "beaucoup d'hyperliens; "
     If nbValidations > 5000 Then msg = msg & "beaucoup de validations; "
     If nbCommentaires > 100 Then msg = msg & "beaucoup de commentaires; "
-    If nbFusions > 100 Then msg = msg & "beaucoup de cellules fusionnÃ©es; "
-    If nbOLE > 0 Then msg = msg & "objets OLE/contrÃ´les prÃ©sents; "
+    If nbFusions > 100 Then msg = msg & "beaucoup de cellules fusionnées; "
+    If nbOLE > 0 Then msg = msg & "objets OLE/contrôles présents; "
 
     If msg = "" Then
         msg = "RAS majeur"
@@ -493,4 +493,5 @@ Private Function DiagnosticFeuille(ByVal nbCells As Double, _
     DiagnosticFeuille = msg
 
 End Function
+
 
