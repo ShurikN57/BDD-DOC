@@ -3,8 +3,7 @@ Option Explicit
 
 ' =============================================
 ' Synchronisation BDD-DOC <-> GitHub / Codex
-' - src        = version UTF-8 lisible pour GitHub / Codex
-' - vba_import = version native réimportable dans Excel
+' - src = version UTF-8 lisible pour GitHub / Codex
 ' =============================================
 
 Private Const ENV_DOSSIER_REPO As String = "BDD_DOC_REPO_PATH"
@@ -38,7 +37,6 @@ Public Sub ExporterProjetVersGitHubEtImportExcel()
     Dim vbComp As Object
     Dim cheminRepo As String
     Dim cheminCodex As String
-    Dim cheminImport As String
 
     If Not ProjetVBAccessible() Then Exit Sub
 
@@ -46,11 +44,9 @@ Public Sub ExporterProjetVersGitHubEtImportExcel()
     If Len(cheminRepo) = 0 Then Exit Sub
 
     cheminCodex = cheminRepo & "\src"
-    cheminImport = cheminRepo & "\vba_import"
 
     CreerDossierSiAbsent cheminRepo
     CreerDossierSiAbsent cheminCodex
-    CreerDossierSiAbsent cheminImport
 
     Set vbProj = ThisWorkbook.VBProject
 
@@ -62,19 +58,16 @@ Public Sub ExporterProjetVersGitHubEtImportExcel()
 
             Case TYPE_STD_MODULE
                 ExporterCodeLisibleUTF8 vbComp, cheminCodex & "\" & vbComp.Name & ".bas"
-                ExporterComposantNatif vbComp, cheminImport & "\" & vbComp.Name & ".bas"
 
             Case TYPE_CLASS_MODULE
                 ExporterCodeLisibleUTF8 vbComp, cheminCodex & "\" & vbComp.Name & ".cls"
-                ExporterComposantNatif vbComp, cheminImport & "\" & vbComp.Name & ".cls"
 
             Case TYPE_USERFORM
-                ExporterUserFormComplet vbComp, cheminCodex, cheminImport
+                ExporterUserFormComplet vbComp, cheminCodex
 
             Case TYPE_DOCUMENT
                 If vbComp.Name = NOM_THISWORKBOOK Or vbComp.Name = NOM_FEUILLE_CIBLE Then
                     ExporterDocumentModule vbComp, cheminCodex & "\" & vbComp.Name & ".txt"
-                    ExporterDocumentModule vbComp, cheminImport & "\" & vbComp.Name & ".txt"
                 End If
 
         End Select
@@ -83,8 +76,7 @@ SuiteComposant:
     Next vbComp
 
     MsgBox "Export terminé :" & vbCrLf & _
-           "- GitHub / Codex : " & cheminCodex & vbCrLf & _
-           "- Réimport Excel : " & cheminImport, vbInformation
+           "- GitHub / Codex : " & cheminCodex, vbInformation
 
 End Sub
 
@@ -96,17 +88,17 @@ Public Sub ImporterProjetDepuisGitHub()
     On Error GoTo ErrHandler
 
     Dim cheminRepo As String
-    Dim cheminImport As String
+    Dim cheminSrc As String
 
     If Not ProjetVBAccessible() Then Exit Sub
 
     cheminRepo = DossierRepo()
     If Len(cheminRepo) = 0 Then Exit Sub
 
-    cheminImport = cheminRepo & "\vba_import"
+    cheminSrc = cheminRepo & "\src"
 
-    If Dir(cheminImport, vbDirectory) = "" Then
-        MsgBox "Dossier introuvable : " & cheminImport, vbExclamation
+    If Dir(cheminSrc, vbDirectory) = "" Then
+        MsgBox "Dossier introuvable : " & cheminSrc, vbExclamation
         Exit Sub
     End If
 
@@ -114,12 +106,12 @@ Public Sub ImporterProjetDepuisGitHub()
     Application.EnableEvents = False
     Application.DisplayAlerts = False
 
-    ImporterModulesStandards cheminImport
-    ImporterClasses cheminImport
-    ImporterUserForms cheminImport
+    ImporterModulesStandards cheminSrc
+    ImporterClasses cheminSrc
+    ImporterUserForms cheminSrc
 
-    RemplacerCodeDocumentDepuisFichier cheminImport & "\" & NOM_FEUILLE_CIBLE & ".txt", NOM_FEUILLE_CIBLE
-    RemplacerCodeDocumentDepuisFichier cheminImport & "\" & NOM_THISWORKBOOK & ".txt", NOM_THISWORKBOOK
+    RemplacerCodeDocumentDepuisFichier cheminSrc & "\" & NOM_FEUILLE_CIBLE & ".txt", NOM_FEUILLE_CIBLE
+    RemplacerCodeDocumentDepuisFichier cheminSrc & "\" & NOM_THISWORKBOOK & ".txt", NOM_THISWORKBOOK
 
 SortiePropre:
     Application.DisplayAlerts = True
@@ -148,30 +140,13 @@ Private Sub ExporterDocumentModule(ByVal vbComp As Object, ByVal cheminFinal As 
 
 End Sub
 
-Private Sub ExporterComposantNatif(ByVal vbComp As Object, ByVal cheminFinal As String)
+Private Sub ExporterUserFormComplet(ByVal vbComp As Object, ByVal cheminCodex As String)
 
-    SupprimerFichierSiExiste cheminFinal, "ExporterComposantNatif"
-    vbComp.Export cheminFinal
-
-End Sub
-
-Private Sub ExporterUserFormComplet(ByVal vbComp As Object, ByVal cheminCodex As String, ByVal cheminImport As String)
-
-    Dim cheminImportFrm As String
-    Dim cheminImportFrx As String
     Dim cheminTempFrm As String
     Dim cheminTempFrx As String
     Dim cheminCodexFrm As String
     Dim cheminCodexFrx As String
     Dim contenuFrm As String
-
-    cheminImportFrm = cheminImport & "\" & vbComp.Name & ".frm"
-    cheminImportFrx = cheminImport & "\" & vbComp.Name & ".frx"
-
-    SupprimerFichierSiExiste cheminImportFrm, "ExporterUserFormComplet"
-    SupprimerFichierSiExiste cheminImportFrx, "ExporterUserFormComplet"
-
-    vbComp.Export cheminImportFrm
 
     cheminTempFrm = Environ$("TEMP") & "\" & vbComp.Name & "_codex.frm"
     cheminTempFrx = Environ$("TEMP") & "\" & vbComp.Name & "_codex.frx"
@@ -204,6 +179,8 @@ Private Sub ImporterModulesStandards(ByVal cheminImport As String)
 
     Dim fichier As String
     Dim nomComp As String
+    Dim vbComp As Object
+    Dim contenu As String
 
     fichier = Dir(cheminImport & "\*.bas")
 
@@ -211,8 +188,17 @@ Private Sub ImporterModulesStandards(ByVal cheminImport As String)
         nomComp = NomSansExtension(fichier)
 
         If Not DoitEtreIgnoreImport(nomComp) Then
-            SupprimerComposantSiExiste nomComp, TYPE_STD_MODULE
-            ThisWorkbook.VBProject.VBComponents.Import cheminImport & "\" & fichier
+            contenu = LireFichierTexteUTF8(cheminImport & "\" & fichier)
+            contenu = NettoyerEnteteExport(contenu)
+
+            SupprimerComposantParNomSiExiste nomComp
+            Set vbComp = ThisWorkbook.VBProject.VBComponents.Add(TYPE_STD_MODULE)
+            vbComp.Name = nomComp
+
+            With vbComp.CodeModule
+                If .CountOfLines > 0 Then .DeleteLines 1, .CountOfLines
+                If Len(contenu) > 0 Then .AddFromString contenu
+            End With
         End If
 
         fichier = Dir
@@ -224,6 +210,8 @@ Private Sub ImporterClasses(ByVal cheminImport As String)
 
     Dim fichier As String
     Dim nomComp As String
+    Dim vbComp As Object
+    Dim contenu As String
 
     fichier = Dir(cheminImport & "\*.cls")
 
@@ -231,8 +219,17 @@ Private Sub ImporterClasses(ByVal cheminImport As String)
         nomComp = NomSansExtension(fichier)
 
         If Not DoitEtreIgnoreImport(nomComp) Then
-            SupprimerComposantSiExiste nomComp, TYPE_CLASS_MODULE
-            ThisWorkbook.VBProject.VBComponents.Import cheminImport & "\" & fichier
+            contenu = LireFichierTexteUTF8(cheminImport & "\" & fichier)
+            contenu = NettoyerEnteteExport(contenu)
+
+            SupprimerComposantParNomSiExiste nomComp
+            Set vbComp = ThisWorkbook.VBProject.VBComponents.Add(TYPE_CLASS_MODULE)
+            vbComp.Name = nomComp
+
+            With vbComp.CodeModule
+                If .CountOfLines > 0 Then .DeleteLines 1, .CountOfLines
+                If Len(contenu) > 0 Then .AddFromString contenu
+            End With
         End If
 
         fichier = Dir
@@ -474,17 +471,6 @@ Private Function DossierCodex() As String
 
 End Function
 
-Private Function DossierImport() As String
-
-    Dim cheminRepo As String
-
-    cheminRepo = DossierRepo()
-    If Len(cheminRepo) = 0 Then Exit Function
-
-    DossierImport = cheminRepo & "\vba_import"
-
-End Function
-
 Private Function NormaliserCheminSansSlash(ByVal chemin As String) As String
 
     Dim resultat As String
@@ -527,14 +513,12 @@ Public Sub VerifierPreRequisGitSync()
 
     Dim cheminRepo As String
     Dim cheminCodex As String
-    Dim cheminImport As String
     Dim message As String
 
     cheminRepo = DossierRepo()
     If Len(cheminRepo) = 0 Then Exit Sub
 
     cheminCodex = cheminRepo & "\src"
-    cheminImport = cheminRepo & "\vba_import"
 
     message = "Pré-check GitSync" & vbCrLf & vbCrLf
 
@@ -546,11 +530,10 @@ Public Sub VerifierPreRequisGitSync()
 
     CreerDossierSiAbsent cheminRepo
     CreerDossierSiAbsent cheminCodex
-    CreerDossierSiAbsent cheminImport
 
     message = message & IIf(TesterEcritureDossier(cheminRepo), "[OK]", "[KO]") & " Dossier repo: " & cheminRepo & vbCrLf
     message = message & IIf(TesterEcritureDossier(cheminCodex), "[OK]", "[KO]") & " Dossier src: " & cheminCodex & vbCrLf
-    message = message & IIf(TesterEcritureDossier(cheminImport), "[OK]", "[KO]") & " Dossier import: " & cheminImport & vbCrLf & vbCrLf
+    message = message & vbCrLf
     message = message & "Source de configuration :" & vbCrLf & _
               "- Variable d'environnement : " & ENV_DOSSIER_REPO & vbCrLf & _
               "- Fallback : dossier du classeur actif"
@@ -625,6 +608,22 @@ Private Sub SupprimerComposantSiExiste(ByVal nomComp As String, ByVal typeAttend
     If vbComp Is Nothing Then Exit Sub
     If vbComp.Type = TYPE_DOCUMENT Then Exit Sub
     If vbComp.Type <> typeAttendu Then Exit Sub
+    If DoitEtreIgnoreImport(vbComp.Name) Then Exit Sub
+
+    ThisWorkbook.VBProject.VBComponents.Remove vbComp
+
+End Sub
+
+Private Sub SupprimerComposantParNomSiExiste(ByVal nomComp As String)
+
+    Dim vbComp As Object
+
+    On Error Resume Next
+    Set vbComp = ThisWorkbook.VBProject.VBComponents(nomComp)
+    On Error GoTo 0
+
+    If vbComp Is Nothing Then Exit Sub
+    If vbComp.Type = TYPE_DOCUMENT Then Exit Sub
     If DoitEtreIgnoreImport(vbComp.Name) Then Exit Sub
 
     ThisWorkbook.VBProject.VBComponents.Remove vbComp
