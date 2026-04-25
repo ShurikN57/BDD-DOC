@@ -22,6 +22,45 @@ Private Const XL_WINDOW_STATE_MAXIMIZE As Long = -4137
 Private Const XL_FIND_LOOKIN_VALUES As Long = -4163
 Private Const XL_LOOKAT_WHOLE As Long = 1
 
+Private Function RecupererInstanceExcel(ByRef xlApp As Object) As Boolean
+
+    On Error Resume Next
+    Set xlApp = GetObject(, "Excel.Application")
+    On Error GoTo 0
+
+    If xlApp Is Nothing Then
+        On Error GoTo Fin
+        Set xlApp = CreateObject("Excel.Application")
+    End If
+
+    RecupererInstanceExcel = Not xlApp Is Nothing
+    Exit Function
+
+Fin:
+    Err.Clear
+    Set xlApp = Nothing
+
+End Function
+
+Private Function RecupererWorksheetSiExiste(ByVal xlWb As Object, ByVal sheetName As String) As Object
+
+    On Error Resume Next
+    Set RecupererWorksheetSiExiste = xlWb.Worksheets(sheetName)
+    On Error GoTo 0
+    Err.Clear
+
+End Function
+
+Private Sub RestaurerEnableEventsSiNecessaire(ByVal xlApp As Object, ByVal eventsStateSaved As Boolean, ByVal oldEvents As Boolean)
+
+    On Error GoTo Fin
+    If eventsStateSaved And Not xlApp Is Nothing Then xlApp.EnableEvents = oldEvents
+
+Fin:
+    Err.Clear
+
+End Sub
+
 Public Sub OpenExcelAtSheetAndLine(ByVal filePath As String, ByVal sheetInfo As String, _
                                    ByVal lineNum As Variant, Optional ByVal searchText As String = "", _
                                    Optional ByVal fullText As String = "")
@@ -68,12 +107,9 @@ Public Sub OpenExcelAtSheetAndLine(ByVal filePath As String, ByVal sheetInfo As 
         Exit Sub
     End If
 
-    On Error Resume Next
-    Set xlApp = GetObject(, "Excel.Application")
-    On Error GoTo ErrHandler
-
-    If xlApp Is Nothing Then
-        Set xlApp = CreateObject("Excel.Application")
+    If Not RecupererInstanceExcel(xlApp) Then
+        MsgBox "Impossible d'ouvrir Microsoft Excel sur ce poste.", vbExclamation
+        Exit Sub
     End If
 
     xlApp.Visible = True
@@ -95,9 +131,7 @@ Public Sub OpenExcelAtSheetAndLine(ByVal filePath As String, ByVal sheetInfo As 
         eventsStateSaved = False
     End If
 
-    On Error Resume Next
-    Set xlWs = xlWb.Worksheets(sheetName)
-    On Error GoTo ErrHandler
+    Set xlWs = RecupererWorksheetSiExiste(xlWb, sheetName)
 
     If xlWs Is Nothing Then
         MsgBox "Onglet introuvable dans le fichier Excel :" & vbCrLf & sheetName, vbExclamation
@@ -130,8 +164,7 @@ Public Sub OpenExcelAtSheetAndLine(ByVal filePath As String, ByVal sheetInfo As 
     Exit Sub
 
 ErrHandler:
-    On Error Resume Next
-    If eventsStateSaved Then xlApp.EnableEvents = oldEvents
+    RestaurerEnableEventsSiNecessaire xlApp, eventsStateSaved, oldEvents
     MsgBox "Erreur Excel : " & Err.description, vbExclamation
 
 End Sub
