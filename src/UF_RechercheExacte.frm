@@ -69,6 +69,7 @@ Private Sub cmdRechercher_Click()
     End If
 
     filterRange.AutoFilter Field:=fieldIndex, Criteria1:="=" & valeurRecherchee
+    MettreAJourCompteurs
 
     Application.ScreenUpdating = True
     Exit Sub
@@ -107,6 +108,7 @@ Private Sub cmdReset_Click()
     End If
 
     Me.txtRecherche.Value = ""
+    RestaurerCompteursInitiaux
 
     Application.ScreenUpdating = True
     Exit Sub
@@ -120,7 +122,6 @@ End Sub
 Private Sub cmdFermer_Click()
     Unload Me
 End Sub
-
 
 
 
