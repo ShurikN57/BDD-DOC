@@ -322,3 +322,5 @@ Private Function ExtraireLigne(ByRef arr As Variant, ByVal rowIndex As Long, ByV
 
 End Function
 
+
+

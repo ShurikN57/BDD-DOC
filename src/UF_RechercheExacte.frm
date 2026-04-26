@@ -48,7 +48,9 @@ Private Sub cmdRechercher_Click()
     lastRow = ws.Cells(ws.Rows.Count, COL_FIRST).End(xlUp).Row
 
     If lastRow < ROW_START Then
-        MsgBox "Aucune donnée dans la feuille.", vbExclamation
+    MettreAJourCompteurs
+    RestaurerCompteursInitiaux
+        MsgBox "Aucune donnÃ©e dans la feuille.", vbExclamation
         Exit Sub
     End If
 
@@ -69,7 +71,6 @@ Private Sub cmdRechercher_Click()
     End If
 
     filterRange.AutoFilter Field:=fieldIndex, Criteria1:="=" & valeurRecherchee
-    MettreAJourCompteurs
 
     Application.ScreenUpdating = True
     Exit Sub
@@ -108,20 +109,21 @@ Private Sub cmdReset_Click()
     End If
 
     Me.txtRecherche.Value = ""
-    RestaurerCompteursInitiaux
 
     Application.ScreenUpdating = True
     Exit Sub
 
 ErrHandler:
     Application.ScreenUpdating = True
-    MsgBox "Erreur lors de la réinitialisation : " & Err.description, vbCritical
+    MsgBox "Erreur lors de la rÃ©initialisation : " & Err.description, vbCritical
 
 End Sub
 
 Private Sub cmdFermer_Click()
     Unload Me
 End Sub
+
+
 
 
 

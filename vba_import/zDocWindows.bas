@@ -173,3 +173,4 @@ FallbackAnsi:
     DecodeUtf8Bytes = StrConv(bytes, vbUnicode)
 
 End Function
+

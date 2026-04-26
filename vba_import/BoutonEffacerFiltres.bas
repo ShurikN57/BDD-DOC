@@ -85,3 +85,4 @@ Private Sub NettoyerBordureSelectionApresFiltre(ByVal ws As Worksheet)
 Fin:
 
 End Sub
+

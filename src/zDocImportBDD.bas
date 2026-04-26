@@ -678,3 +678,5 @@ Private Function GetOrCreateSheetSynchro(ByVal wb As Workbook) As Worksheet
     Set GetOrCreateSheetSynchro = ws
 
 End Function
+
+

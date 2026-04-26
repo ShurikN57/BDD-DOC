@@ -494,3 +494,5 @@ Private Function DiagnosticFeuille(ByVal nbCells As Double, _
 
 End Function
 
+
+

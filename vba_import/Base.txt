@@ -1,5 +1,4 @@
-﻿Attribute VB_Name = "Base"
-Option Explicit
+﻿Option Explicit
 
 Private AncienneCelluleRecherche As Range
 Private m_PrevScreenUpdating As Boolean
@@ -940,4 +939,5 @@ Private Sub Worksheet_BeforeDoubleClick(ByVal Target As Range, Cancel As Boolean
     End If
 
 End Sub
+
 

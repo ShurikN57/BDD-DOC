@@ -26,13 +26,13 @@ Public Function FileUrlToWindowsPath(ByVal fileUrl As String) As String
 
     s = Replace(s, "\", "/")
 
-    ' ===== Déjà un chemin UNC =====
+    ' ===== DÃ©jÃ  un chemin UNC =====
     If Left$(s, 2) = "//" Then
         FileUrlToWindowsPath = Replace(s, "/", "\")
         Exit Function
     End If
 
-    ' ===== Déjà un chemin local Windows =====
+    ' ===== DÃ©jÃ  un chemin local Windows =====
     If Len(s) >= 3 Then
         If Mid$(s, 2, 2) = ":/" Or Mid$(s, 2, 2) = ":\\" Then
             s = UrlDecodeUtf8(s)

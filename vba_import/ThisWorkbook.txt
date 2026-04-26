@@ -1,5 +1,4 @@
-﻿Attribute VB_Name = "ThisWorkbook"
-Option Explicit
+﻿Option Explicit
 
 ' ============================================================
 ' Open
@@ -143,4 +142,5 @@ Fin:
     Err.Clear
 
 End Sub
+
 

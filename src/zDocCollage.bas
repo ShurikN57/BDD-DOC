@@ -495,3 +495,5 @@ Private Function ConstruirePlageReelleCollage(ByVal ws As Worksheet, ByVal cible
 
 End Function
 
+
+
