@@ -5,22 +5,21 @@ Option Explicit
 ' Synchronisation BDD-DOC agents -> BDD-DOC perso
 ' =============================================
 
-Private Const NOM_CLASSEUR_SOURCE As String = "BDD-DOC-24-04"
-Private Const NOM_ONGLET_SOURCE As String = "Base"
+Private Const NOM_CLASSEUR_SOURCE_DEFAULT  As String = "BDD-DOC-24-04"
+Private Const NOM_ONGLET_SOURCE_DEFAULT    As String = "Base"
+Private Const NOM_CLASSEUR_CIBLE_DEFAULT   As String = "BDD-DOC"
+Private Const NOM_ONGLET_CIBLE_DEFAULT     As String = "Base"
 
-Private Const NOM_CLASSEUR_CIBLE As String = "BDD-DOC"
-Private Const NOM_ONGLET_CIBLE As String = "Base"
-
-Private Const ONGLET_ID_ABSENTS As String = "ID_absents"
-Private Const ONGLET_ID_DOUBLONS As String = "ID_doublons"
-Private Const ONGLET_ECARTS As String = "Ecarts_valeurs"
+Private Const ONGLET_ID_ABSENTS   As String = "Ag_ID_absents"
+Private Const ONGLET_ID_DOUBLONS  As String = "Ag_ID_doublons"
+Private Const ONGLET_ECARTS       As String = "Ag_Ecarts_Y_AB"
 
 Private Const NOM_FORME_ACTUALISATION As String = "Actualisation"
 
 Private Const FERMER_APRES_SYNCHRO As Boolean = True
 
 ' =============================================
-' 0. Sécurité / protection
+' 0-a. Sécurité / mot de passe
 ' =============================================
 Private Function MotDePasseValideImportBDD() As Boolean
 
@@ -37,6 +36,9 @@ Private Function MotDePasseValideImportBDD() As Boolean
 
 End Function
 
+' =============================================
+' 0-b. Protection / déprotection
+' =============================================
 Private Sub DeprotegerFeuilleSiPossible(ByVal ws As Worksheet)
 
     On Error GoTo ErrHandler
@@ -49,6 +51,9 @@ ErrHandler:
 
 End Sub
 
+' =============================================
+' 0-c. Protection / déprotection
+' =============================================
 Private Sub ProtegerFeuilleSiPossible(ByVal ws As Worksheet)
 
     On Error GoTo ErrHandler
@@ -68,86 +73,115 @@ End Sub
 Public Sub SynchroniserDonneesAgents()
 
     Dim wbSource As Workbook
-    Dim wbCible As Workbook
+    Dim wbCible  As Workbook
     Dim wsSource As Worksheet
-    Dim wsCible As Worksheet
+    Dim wsCible  As Worksheet
 
     Dim lastRowSource As Long
-    Dim lastRowCible As Long
+    Dim lastRowCible  As Long
 
     Dim dictCible As Object
     Dim dictCount As Object
 
-    Dim i As Long
-    Dim idVal As String
+    Dim i         As Long
+    Dim idVal     As String
     Dim confSource As String
 
-    Dim arrSourceID As Variant
+    Dim arrSourceID   As Variant
     Dim arrSourceYZAB As Variant
-    Dim arrCibleID As Variant
-    Dim arrCibleYZAB As Variant
+    Dim arrCibleID    As Variant
+    Dim arrCibleYZAB  As Variant
 
-    Dim wsAbs As Worksheet
+    Dim wsAbs     As Worksheet
     Dim wsDoublons As Worksheet
-    Dim wsEcarts As Worksheet
+    Dim wsEcarts  As Worksheet
 
-    Dim rowAbs As Long
+    Dim rowAbs     As Long
     Dim rowDoublons As Long
-    Dim rowEcarts As Long
+    Dim rowEcarts  As Long
 
-    Dim nbMaj As Long
-    Dim nbAbs As Long
+    Dim nbMaj      As Long
+    Dim nbAbs      As Long
     Dim nbDoublons As Long
-    Dim nbEcarts As Long
+    Dim nbEcarts   As Long
     Dim nbIgnorees As Long
 
-    Dim ligneCible As Long
-    Dim yzabSource As Variant
-    Dim yzabCible As Variant
+    Dim ligneCible      As Long
+    Dim yzabSource      As Variant
+    Dim yzabCible       As Variant
 
-    Dim rngConfImpactee As Range
+    Dim rngConfImpactee   As Range
     Dim prevScreenUpdating As Boolean
-    Dim prevEnableEvents As Boolean
-    Dim prevCalculation As XlCalculation
-    Dim cibleDeprotegee As Boolean
+    Dim prevEnableEvents   As Boolean
+    Dim prevCalculation    As XlCalculation
+    Dim etatApplicationSauve As Boolean
+    Dim cibleDeprotegee    As Boolean
+
+    Dim nomClasseurSrc   As String
+    Dim nomOngletSrc     As String
+    Dim nomClasseurCible As String
+    Dim nomOngletCible   As String
 
     On Error GoTo ErrHandler
 
+    ' ===== 1. Mot de passe =====
     If Not MotDePasseValideImportBDD() Then Exit Sub
 
+    ' ===== 2. Saisie via UserForm =====
+    Dim frm As UF_ImportBDD
+    Set frm = New UF_ImportBDD
+
+    frm.InitialiserImportBDD NOM_CLASSEUR_SOURCE_DEFAULT, NOM_ONGLET_SOURCE_DEFAULT
+    frm.Show vbModal
+
+    Dim bConfirmed As Boolean
+    bConfirmed = frm.Confirmed
+    nomClasseurSrc = frm.nomClasseurSrc
+    nomOngletSrc = frm.nomOngletSrc
+    nomClasseurCible = frm.nomClasseurCible
+    nomOngletCible = frm.nomOngletCible
+
+    Unload frm
+    Set frm = Nothing
+
+    If Not bConfirmed Then Exit Sub
+
+    ' ===== 3. Sauvegarde état application =====
     prevScreenUpdating = Application.ScreenUpdating
     prevEnableEvents = Application.EnableEvents
     prevCalculation = Application.Calculation
+    etatApplicationSauve = True
 
     Application.ScreenUpdating = False
     Application.EnableEvents = False
     Application.Calculation = xlCalculationManual
 
-    Set wbSource = GetWorkbookByBaseName(NOM_CLASSEUR_SOURCE)
+    ' ===== 4. Résolution des classeurs =====
+    Set wbSource = GetWorkbookByBaseName(nomClasseurSrc)
     If wbSource Is Nothing Then
-        MsgBox "Classeur source introuvable : " & NOM_CLASSEUR_SOURCE, vbExclamation
+        MsgBox "Classeur source introuvable : " & nomClasseurSrc, vbExclamation
         GoTo SortiePropre
     End If
 
-    Set wbCible = GetWorkbookByBaseName(NOM_CLASSEUR_CIBLE)
+    Set wbCible = GetWorkbookByBaseName(nomClasseurCible)
     If wbCible Is Nothing Then
-        MsgBox "Classeur cible introuvable : " & NOM_CLASSEUR_CIBLE, vbExclamation
+        MsgBox "Classeur cible introuvable : " & nomClasseurCible, vbExclamation
         GoTo SortiePropre
     End If
 
-    Set wsSource = GetWorksheetSafe(wbSource, NOM_ONGLET_SOURCE)
+    Set wsSource = GetWorksheetSafe(wbSource, nomOngletSrc)
     If wsSource Is Nothing Then
-        MsgBox "Onglet source introuvable : " & NOM_ONGLET_SOURCE, vbExclamation
+        MsgBox "Onglet source introuvable : " & nomOngletSrc, vbExclamation
         GoTo SortiePropre
     End If
 
-    Set wsCible = GetWorksheetSafe(wbCible, NOM_ONGLET_CIBLE)
+    Set wsCible = GetWorksheetSafe(wbCible, nomOngletCible)
     If wsCible Is Nothing Then
-        MsgBox "Onglet cible introuvable : " & NOM_ONGLET_CIBLE, vbExclamation
+        MsgBox "Onglet cible introuvable : " & nomOngletCible, vbExclamation
         GoTo SortiePropre
     End If
 
-    ' ===== Déprotection de la feuille cible =====
+    ' ===== 5. Déprotection de la feuille cible =====
     DeprotegerFeuilleSiPossible wsCible
     cibleDeprotegee = (Not wsCible.ProtectContents)
 
@@ -220,7 +254,7 @@ Public Sub SynchroniserDonneesAgents()
                     nbMaj = nbMaj + 1
 
                 ElseIf YZABEgaux(yzabSource, yzabCible) Then
-                    AjouterCelluleConformiteImpactee wsCible, ligneCible, rngConfImpactee
+                    ' Lignes déjà identiques : pas de modification, pas de rafraîchissement couleur
                     nbIgnorees = nbIgnorees + 1
 
                 Else
@@ -241,22 +275,22 @@ Public Sub SynchroniserDonneesAgents()
     AjusterRapports wsDoublons
     AjusterRapports wsEcarts
 
-    MettreAJourTexteActualisation wbCible, NOM_ONGLET_CIBLE, NOM_FORME_ACTUALISATION
+    MettreAJourTexteActualisation wbCible, nomOngletCible, NOM_FORME_ACTUALISATION, nomClasseurSrc
     NettoyerContexteApresSynchronisation wbCible, wsCible
-    EnregistrerJournalSynchro wbCible, nbMaj, nbAbs, nbDoublons, nbEcarts, nbIgnorees
+    EnregistrerJournalSynchro wbCible, nomClasseurSrc, nbMaj, nbAbs, nbDoublons, nbEcarts, nbIgnorees
 
     If FERMER_APRES_SYNCHRO Then
         MsgBox "Synchronisation terminée." & vbCrLf & vbCrLf & _
-                "Mises à jour : " & nbMaj & vbCrLf & _
-                "ID absents : " & nbAbs & vbCrLf & _
-                "ID doublons : " & nbDoublons & vbCrLf & _
-                "Écarts valeurs : " & nbEcarts & vbCrLf & _
-                "Déjà identiques : " & nbIgnorees & vbCrLf & vbCrLf & _
-                "Sauvegarde du fichier en cours." & vbCrLf & _
-                "Veuillez rouvrir BDD-DOC.", vbInformation
+               "Mises à jour : " & nbMaj & vbCrLf & _
+               "ID absents : " & nbAbs & vbCrLf & _
+               "ID doublons : " & nbDoublons & vbCrLf & _
+               "Écarts valeurs : " & nbEcarts & vbCrLf & _
+               "Déjà identiques : " & nbIgnorees & vbCrLf & vbCrLf & _
+               "Sauvegarde du fichier en cours." & vbCrLf & _
+               "Veuillez rouvrir BDD-DOC.", vbInformation
 
         FinaliserEtFermerApresSynchronisation wbSource, wbCible, wsCible, cibleDeprotegee, _
-                                          prevCalculation, prevEnableEvents, prevScreenUpdating
+                                              prevCalculation, prevEnableEvents, prevScreenUpdating
         Exit Sub
     End If
 
@@ -274,9 +308,11 @@ SortiePropre:
         ProtegerFeuilleSiPossible wsCible
     End If
 
-    Application.Calculation = prevCalculation
-    Application.EnableEvents = prevEnableEvents
-    Application.ScreenUpdating = prevScreenUpdating
+    If etatApplicationSauve Then
+        Application.Calculation = prevCalculation
+        Application.EnableEvents = prevEnableEvents
+        Application.ScreenUpdating = prevScreenUpdating
+    End If
     Exit Sub
 
 ErrHandler:
@@ -311,23 +347,35 @@ Private Sub FinaliserEtFermerApresSynchronisation(ByVal wbSource As Workbook, _
     Application.OnKey "^l"
     Application.OnKey "%{F11}"
 
-    ' Important : on bloque les événements pour empêcher Workbook_BeforeClose
+    ' Sauvegarde sans déclencher d'événements, puis restauration AVANT fermeture.
+    ' Important : si le classeur contenant la macro se ferme, le code après Close
+    ' peut ne pas être exécuté. Il faut donc restaurer les événements avant.
     Application.EnableEvents = False
-
     wbCible.Save
+    Application.EnableEvents = prevEnableEvents
 
     If Not wbSource Is Nothing Then
         wbSource.Close SaveChanges:=False
     End If
 
-    wbCible.Close SaveChanges:=True
+    wbCible.Close SaveChanges:=False
 
     Exit Sub
 
 ErrHandler:
+    On Error Resume Next
+    Application.CutCopyMode = False
+    Application.Calculation = prevCalculation
+    Application.ScreenUpdating = prevScreenUpdating
+    Application.EnableEvents = prevEnableEvents
+
+    If cibleDeprotegee Then
+        ProtegerFeuilleSiPossible wsCible
+    End If
+
     Debug.Print "[zDocImportBDD] FinaliserEtFermerApresSynchronisation : " & Err.Number & " - " & Err.description
-    Err.Clear
-    Resume Next
+    MsgBox "Erreur lors de la finalisation / fermeture après synchronisation : " & Err.description, vbExclamation
+    On Error GoTo 0
 
 End Sub
 
@@ -336,7 +384,7 @@ End Sub
 ' =============================================
 Private Sub ConstruireIndexCible(ByVal arrCibleID As Variant, ByVal dictCible As Object, ByVal dictCount As Object)
 
-    Dim i As Long
+    Dim i     As Long
     Dim idVal As String
 
     For i = 1 To UBound(arrCibleID, 1)
@@ -434,17 +482,21 @@ End Sub
 ' =============================================
 ' 9. MettreAJourTexteActualisation
 ' =============================================
-Private Sub MettreAJourTexteActualisation(ByVal wb As Workbook, ByVal nomOnglet As String, ByVal nomForme As String)
+Private Sub MettreAJourTexteActualisation(ByVal wb As Workbook, ByVal nomOnglet As String, ByVal nomForme As String, ByVal nomSource As String)
 
     Dim ws As Worksheet
+    Dim titre As String
 
     On Error GoTo Fin
+
+    titre = "Dernière actualisation :"
 
     Set ws = wb.Worksheets(nomOnglet)
 
     With ws.Shapes(nomForme).TextFrame
-        .Characters.Text = "Dernière actualisation : " & Format(Now, "dd/mm/yyyy hh:mm:ss") & vbCrLf & _
-                           "Source : " & NOM_CLASSEUR_SOURCE
+        .Characters.Text = titre & " " & Format(Now, "dd/mm/yyyy hh:mm:ss") & vbCrLf & _
+                           "Source : " & nomSource
+        .Characters(1, Len(titre)).Font.Color = RGB(229, 158, 221)
     End With
 
 Fin:
@@ -565,7 +617,7 @@ End Sub
 ' =============================================
 Private Function GetWorkbookByBaseName(ByVal baseName As String) As Workbook
 
-    Dim wb As Workbook
+    Dim wb               As Workbook
     Dim nomSansExtension As String
 
     For Each wb In Application.Workbooks
@@ -588,11 +640,9 @@ End Function
 ' =============================================
 Private Function GetWorksheetSafe(ByVal wb As Workbook, ByVal nomOnglet As String) As Worksheet
 
-    ' Test d'existence d'une feuille : bloc local tolérant et borné
     On Error Resume Next
     Set GetWorksheetSafe = wb.Worksheets(nomOnglet)
     On Error GoTo 0
-    Err.Clear
 
 End Function
 
@@ -604,7 +654,6 @@ Private Sub NettoyerContexteApresSynchronisation(ByVal wbCible As Workbook, ByVa
     On Error GoTo Fin
 
     Application.CutCopyMode = False
-    DoEvents
 
     wbCible.Activate
     wsCible.Activate
@@ -621,13 +670,14 @@ End Sub
 ' 21. EnregistrerJournalSynchro
 ' =============================================
 Private Sub EnregistrerJournalSynchro(ByVal wb As Workbook, _
+                                      ByVal nomSource As String, _
                                       ByVal nbMaj As Long, _
                                       ByVal nbAbs As Long, _
                                       ByVal nbDoublons As Long, _
                                       ByVal nbEcarts As Long, _
                                       ByVal nbIgnorees As Long)
 
-    Dim ws As Worksheet
+    Dim ws      As Worksheet
     Dim nextRow As Long
 
     On Error GoTo Fin
@@ -648,7 +698,7 @@ Private Sub EnregistrerJournalSynchro(ByVal wb As Workbook, _
     ws.Cells(nextRow, 2).Value = Time
     ws.Cells(nextRow, 2).NumberFormat = "hh:mm:ss"
 
-    ws.Cells(nextRow, 3).Value = NOM_CLASSEUR_SOURCE
+    ws.Cells(nextRow, 3).Value = nomSource
     ws.Cells(nextRow, 4).Value = nbMaj
     ws.Cells(nextRow, 5).Value = nbAbs
     ws.Cells(nextRow, 6).Value = nbDoublons
@@ -678,6 +728,5 @@ Private Function GetOrCreateSheetSynchro(ByVal wb As Workbook) As Worksheet
     Set GetOrCreateSheetSynchro = ws
 
 End Function
-
 
 

@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} UF_RechercheExacte 
    Caption         =   "Recherche exacte RF principal"
-   ClientHeight    =   1332
+   ClientHeight    =   1365
    ClientLeft      =   390
-   ClientTop       =   1545
-   ClientWidth     =   4560
+   ClientTop       =   1455
+   ClientWidth     =   4590
    OleObjectBlob   =   "UF_RechercheExacte.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -25,6 +25,9 @@ Private Sub UserForm_Initialize()
 
 End Sub
 
+' ============================================================
+'
+' ============================================================
 Private Sub cmdRechercher_Click()
 
     On Error GoTo ErrHandler
@@ -48,9 +51,8 @@ Private Sub cmdRechercher_Click()
     lastRow = ws.Cells(ws.Rows.Count, COL_FIRST).End(xlUp).Row
 
     If lastRow < ROW_START Then
-    MettreAJourCompteurs
-    RestaurerCompteursInitiaux
-        MsgBox "Aucune donnÃ©e dans la feuille.", vbExclamation
+        MettreAJourCompteurs
+        MsgBox "Aucune donnée dans la feuille.", vbExclamation
         Exit Sub
     End If
 
@@ -72,6 +74,9 @@ Private Sub cmdRechercher_Click()
 
     filterRange.AutoFilter Field:=fieldIndex, Criteria1:="=" & valeurRecherchee
 
+    MettreAJourCompteurs
+
+SortiePropre:
     Application.ScreenUpdating = True
     Exit Sub
 
@@ -80,6 +85,10 @@ ErrHandler:
     MsgBox "Erreur lors de la recherche : " & Err.description, vbCritical
 
 End Sub
+
+' ============================================================
+'
+' ============================================================
 
 Private Sub cmdReset_Click()
 
@@ -110,18 +119,29 @@ Private Sub cmdReset_Click()
 
     Me.txtRecherche.Value = ""
 
+    RestaurerCompteursInitiaux
+
+SortiePropre:
     Application.ScreenUpdating = True
     Exit Sub
 
 ErrHandler:
     Application.ScreenUpdating = True
-    MsgBox "Erreur lors de la rÃ©initialisation : " & Err.description, vbCritical
+    MsgBox "Erreur lors de la réinitialisation : " & Err.description, vbCritical
 
 End Sub
-
+' ============================================================
+'
+' ============================================================
 Private Sub cmdFermer_Click()
     Unload Me
 End Sub
+
+
+
+
+
+
 
 
 

@@ -175,7 +175,7 @@ Public Sub ModeDeveloppeur_ON()
     Dim prevEnableEvents As Boolean
     Dim prevCalculation As XlCalculation
 
-      ' If Not MotDePasseValidePourBouton("Mode développeur") Then Exit Sub
+      If Not MotDePasseValidePourBouton("Mode développeur") Then Exit Sub
 
     MDP = MDP_DEV
 

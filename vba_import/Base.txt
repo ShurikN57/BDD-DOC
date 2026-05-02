@@ -82,17 +82,17 @@ Private Sub Worksheet_SelectionChange(ByVal Target As Range)
 
     On Error GoTo SortiePropre
 
-    If Target.Cells.CountLarge > MAX_SELECTION_CHANGE Then Exit Sub
-
     Dim bCopieEnCours As Boolean
     Dim zoneUndo As Range
     Dim cibleUndo As Range
     Static AncienneSelectionBordure As Range
     Dim rngSelectionCourante As Range
-    Dim lastDataRow As Long
+    Dim zoneTableau As Range
+    Dim zoneSelectionDansTableau As Range
+    Dim area As Range
     Dim firstRow As Long
-    Dim lastRow As Long
-    Dim zoneVisibleSel As Range
+    Dim lastRowSelection As Long
+    Dim lastDataRow As Long
 
     bCopieEnCours = (Application.CutCopyMode <> 0)
     lastDataRow = DerniereLigneUtile()
@@ -127,9 +127,15 @@ Private Sub Worksheet_SelectionChange(ByVal Target As Range)
         End If
     End If
 
+    ' Important :
+    ' pendant un copier, on ne touche pas aux bordures,
+    ' sinon Excel peut perdre le mode copie.
     If bCopieEnCours Then GoTo SortiePropre
 
-    If ActiveCell.Row < ROW_START Or ActiveCell.Row > lastDataRow Then
+    Set zoneTableau = Me.Range(Me.Cells(ROW_START, 1), Me.Cells(lastDataRow, NB_COL_UI))
+    Set zoneSelectionDansTableau = Intersect(Target, zoneTableau)
+
+    If zoneSelectionDansTableau Is Nothing Then
         If Not AncienneSelectionBordure Is Nothing Then
             Application.ScreenUpdating = False
 
@@ -152,40 +158,17 @@ Private Sub Worksheet_SelectionChange(ByVal Target As Range)
         GoTo SortiePropre
     End If
 
-    If Me.FilterMode Then
-        On Error Resume Next
-        Set zoneVisibleSel = Target.SpecialCells(xlCellTypeVisible)
-        On Error GoTo SortiePropre
+    firstRow = Me.Rows.Count
+    lastRowSelection = 0
 
-        If zoneVisibleSel Is Nothing Then
-            Set rngSelectionCourante = Me.Range(Me.Cells(ActiveCell.Row, 1), Me.Cells(ActiveCell.Row, NB_COL_UI))
-
-        ElseIf zoneVisibleSel.Areas.Count = 1 Then
-            firstRow = zoneVisibleSel.Row
-            lastRow = zoneVisibleSel.Row + zoneVisibleSel.Rows.Count - 1
-
-            If firstRow < ROW_START Then firstRow = ROW_START
-            If lastRow > lastDataRow Then lastRow = lastDataRow
-
-            Set rngSelectionCourante = Me.Range(Me.Cells(firstRow, 1), Me.Cells(lastRow, NB_COL_UI))
-
-        Else
-            Set rngSelectionCourante = Me.Range(Me.Cells(ActiveCell.Row, 1), Me.Cells(ActiveCell.Row, NB_COL_UI))
+    For Each area In zoneSelectionDansTableau.Areas
+        If area.Row < firstRow Then firstRow = area.Row
+        If area.Row + area.Rows.Count - 1 > lastRowSelection Then
+            lastRowSelection = area.Row + area.Rows.Count - 1
         End If
+    Next area
 
-    Else
-        If Target.Areas.Count = 1 Then
-            firstRow = Target.Row
-            lastRow = Target.Row + Target.Rows.Count - 1
-
-            If firstRow < ROW_START Then firstRow = ROW_START
-            If lastRow > lastDataRow Then lastRow = lastDataRow
-
-            Set rngSelectionCourante = Me.Range(Me.Cells(firstRow, 1), Me.Cells(lastRow, NB_COL_UI))
-        Else
-            Set rngSelectionCourante = Me.Range(Me.Cells(ActiveCell.Row, 1), Me.Cells(ActiveCell.Row, NB_COL_UI))
-        End If
-    End If
+    Set rngSelectionCourante = Me.Range(Me.Cells(firstRow, 1), Me.Cells(lastRowSelection, NB_COL_UI))
 
     If Not AncienneSelectionBordure Is Nothing Then
         If rngSelectionCourante.Address = AncienneSelectionBordure.Address Then GoTo SortiePropre
@@ -939,5 +922,11 @@ Private Sub Worksheet_BeforeDoubleClick(ByVal Target As Range, Cancel As Boolean
     End If
 
 End Sub
+
+
+
+
+
+
 
 

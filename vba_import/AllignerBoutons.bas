@@ -160,5 +160,64 @@ Sub AlignerBoutons3()
 
 End Sub
 
+Sub AlignerBoutons4()
+
+    ' =============================================
+    ' SEUL PARAMÈTRE À MODIFIER
+    Dim margeInterieure As Double: margeInterieure = 10  ' espace bord ? boutons (haut, bas, gauche, droite)
+    ' =============================================
+    ' Taille des boutons calculée automatiquement
+    ' pour remplir Grand1 de façon homogène
+
+    Dim ws As Worksheet
+    Set ws = ActiveSheet
+
+    Dim grandRect As Shape
+    Set grandRect = ws.Shapes("Grand4")
+
+    ' Calcul automatique largeur et hauteur des boutons
+    Dim largeurBouton As Double
+    Dim hauteurBouton As Double
+    Dim espaceH As Double  ' espace horizontal entre les 2 colonnes
+    Dim espaceV As Double  ' espace vertical entre les 2 lignes
+
+    ' 2 colonnes ? largeur dispo partagée en 2
+    largeurBouton = (grandRect.Width - (2 * margeInterieure) - margeInterieure) / 2
+    espaceH = margeInterieure
+
+    ' 2 lignes ? hauteur dispo partagée en 2
+    hauteurBouton = (grandRect.Height - (2 * margeInterieure) - margeInterieure) / 2
+    espaceV = margeInterieure
+
+    ' Positions
+    Dim left1 As Double: left1 = grandRect.Left + margeInterieure
+    Dim left2 As Double: left2 = left1 + largeurBouton + espaceH
+    Dim top1  As Double: top1 = grandRect.Top + margeInterieure
+    Dim top2  As Double: top2 = top1 + hauteurBouton + espaceV
+
+    With ws.Shapes("Actualisation")
+        .Width = largeurBouton: .Height = hauteurBouton
+        .Left = left1: .Top = top1
+    End With
+
+    With ws.Shapes("DernierImportPQ")
+        .Width = largeurBouton: .Height = hauteurBouton
+        .Left = left2: .Top = top1
+    End With
+    
+
+    With ws.Shapes("DernierExport")
+        .Width = largeurBouton: .Height = hauteurBouton
+        .Left = left1: .Top = top2
+    End With
+
+    With ws.Shapes("DernierImport")
+        .Width = largeurBouton: .Height = hauteurBouton
+        .Left = left2: .Top = top2
+    End With
+
+    MsgBox "Boutons alignés !", vbInformation
+
+End Sub
 
 

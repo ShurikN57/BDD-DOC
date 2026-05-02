@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} UF_Agent 
    Caption         =   "Sélection de l'agent"
-   ClientHeight    =   3204
+   ClientHeight    =   3210
    ClientLeft      =   330
    ClientTop       =   1305
    ClientWidth     =   4290
@@ -71,6 +71,12 @@ Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)
     End If
 
 End Sub
+
+
+
+
+
+
 
 
 
