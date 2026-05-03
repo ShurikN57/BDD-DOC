@@ -18,7 +18,7 @@ Option Explicit
 ' =============================================
 
 Private Const DOSSIER_REPO_PC1 As String = "C:\Users\FMF00CDN\Desktop\BDD-DOC"
-Private Const DOSSIER_REPO_PC2 As String = "C:\Users\micho\OneDrive\Desktop\DOC"
+Private Const DOSSIER_REPO_PC2 As String = "\C:\BDD-DOC"
 
 Private Const NOM_THISWORKBOOK As String = "ThisWorkbook"
 Private Const NOM_FEUILLE_CIBLE As String = "Base"

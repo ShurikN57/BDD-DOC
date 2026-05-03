@@ -201,7 +201,69 @@ Private Sub ValiderSourceOuErreur(ByVal wsSource As Worksheet)
             "Colonnes trouvées : " & lastColSource & " — Attendu : " & NB_COL_TABLE
     End If
 
+    ' Contrôle des colonnes structurantes.
+    ' On compare les titres source ligne 1 avec les titres de Base ligne ROW_HEADER.
+    ValiderTitreColonneSource wsSource, ColNum(COL_RF)
+    ValiderTitreColonneSource wsSource, ColNum(COL_REF)
+    ValiderTitreColonneSource wsSource, ColNum(COL_ID)
+    ValiderTitreColonneSource wsSource, ColNum(COL_DATE)
+    ValiderTitreColonneSource wsSource, ColNum(COL_NOM)
+    ValiderTitreColonneSource wsSource, ColNum(COL_CONF)
+    ValiderTitreColonneSource wsSource, ColNum(COL_OBS)
+
 End Sub
+
+' ============================================================
+' VALIDE UN TITRE DE COLONNE SOURCE
+' ============================================================
+Private Sub ValiderTitreColonneSource(ByVal wsSource As Worksheet, ByVal idxCol As Long)
+
+    Dim wsBase As Worksheet
+    Dim titreAttendu As String
+    Dim titreSource As String
+    Dim nomColonne As String
+
+    Set wsBase = ThisWorkbook.Worksheets(SHEET_MAIN)
+
+    titreAttendu = NormaliserTitreColonne(wsBase.Cells(ROW_HEADER, idxCol).Value)
+    titreSource = NormaliserTitreColonne(wsSource.Cells(1, idxCol).Value)
+
+    nomColonne = Replace(wsBase.Cells(1, idxCol).Address(False, False), "1", "")
+
+    If Len(titreAttendu) = 0 Then
+        Err.Raise vbObjectError + 2010, , _
+            "Titre attendu vide dans Base pour la colonne " & nomColonne & "."
+    End If
+
+    If titreSource <> titreAttendu Then
+        Err.Raise vbObjectError + 2011, , _
+            "Structure source invalide en colonne " & nomColonne & "." & vbCrLf & _
+            "Titre attendu : " & wsBase.Cells(ROW_HEADER, idxCol).Value & vbCrLf & _
+            "Titre trouvé : " & wsSource.Cells(1, idxCol).Value
+    End If
+
+End Sub
+
+' ============================================================
+' NORMALISE UN TITRE DE COLONNE
+' ============================================================
+Private Function NormaliserTitreColonne(ByVal valeur As Variant) As String
+
+    Dim s As String
+
+    s = CStr(valeur)
+    s = Replace(s, ChrW$(160), " ")
+    s = Trim$(s)
+
+    Do While InStr(1, s, "  ", vbBinaryCompare) > 0
+        s = Replace(s, "  ", " ")
+    Loop
+
+    NormaliserTitreColonne = LCase$(s)
+
+End Function
+
+
 
 ' ============================================================
 ' CHARGE L'ANCIENNE BASE
@@ -360,31 +422,50 @@ End Sub
 Private Sub RemplacerBaseDepuisSource(ByVal wsCible As Worksheet, ByVal wsSource As Worksheet)
 
     Dim lastRowSource As Long
+    Dim lastRowCible As Long
+    Dim lastRowNouveau As Long
+    Dim lastRowEffacer As Long
+
     Dim arr           As Variant
     Dim i             As Long
     Dim idxNum        As Long
+    Dim nbLignes      As Long
+    Dim nbColonnes    As Long
 
     idxNum = ColNum(COL_NUM)
 
     lastRowSource = wsSource.Cells(wsSource.Rows.Count, 1).End(xlUp).Row
+    lastRowCible = wsCible.Cells(wsCible.Rows.Count, 1).End(xlUp).Row
 
-    ' Effacement uniquement après validation (déjà faite)
-    wsCible.Range(wsCible.Cells(ROW_START, 1), _
-                  wsCible.Cells(wsCible.Rows.Count, NB_COL_TABLE)).ClearContents
-
-    ' Colonne NUM en texte avant écriture
-    wsCible.Columns(idxNum).NumberFormat = "@"
+    If lastRowCible < ROW_START Then lastRowCible = ROW_START
 
     arr = wsSource.Range(wsSource.Cells(2, 1), wsSource.Cells(lastRowSource, NB_COL_TABLE)).Value2
 
+    nbLignes = UBound(arr, 1)
+    nbColonnes = UBound(arr, 2)
+
+    lastRowNouveau = ROW_START + nbLignes - 1
+
+    lastRowEffacer = lastRowCible
+    If lastRowNouveau > lastRowEffacer Then lastRowEffacer = lastRowNouveau
+
+    ' Effacement limité à la zone réellement utile :
+    ' ancienne base ou nouvelle base, selon la plus grande.
+    wsCible.Range(wsCible.Cells(ROW_START, 1), _
+                  wsCible.Cells(lastRowEffacer, NB_COL_TABLE)).ClearContents
+
+    ' Colonne NUM en texte uniquement sur la zone utile
+    wsCible.Range(wsCible.Cells(ROW_START, idxNum), _
+                  wsCible.Cells(lastRowNouveau, idxNum)).NumberFormat = "@"
+
     ' Colonne NUM : conserver exactement le texte Power Query
-    For i = 1 To UBound(arr, 1)
+    For i = 1 To nbLignes
         If Len(Trim$(CStr(arr(i, idxNum)))) > 0 Then
             arr(i, idxNum) = CStr(arr(i, idxNum))
         End If
     Next i
 
-    wsCible.Cells(ROW_START, 1).Resize(UBound(arr, 1), UBound(arr, 2)).Value = arr
+    wsCible.Cells(ROW_START, 1).Resize(nbLignes, nbColonnes).Value = arr
 
 End Sub
 
